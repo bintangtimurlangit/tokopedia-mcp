@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "tokopedia": {
-      "command": "tokopedia-mcp",
-      "args": [],
-      "envFile": "${workspaceFolder}/.env"
-    }
-  }
-}
