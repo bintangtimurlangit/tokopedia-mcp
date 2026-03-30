@@ -1,40 +1,6 @@
 # Configuration
 
-## Install the package
-
-### npm (published package)
-
-The npm package **`@bintangtimuralngit/tokopedia-mcp`** ships the compiled server under `build/` and exposes the **`tokopedia-mcp`** CLI (binary name is unchanged).
-
-```bash
-npm install -g @bintangtimuralngit/tokopedia-mcp
-```
-
-Or use **`npx`** without a global install:
-
-```bash
-npx -y @bintangtimuralngit/tokopedia-mcp
-```
-
-`prepublishOnly` runs `npm run build` before publish, so the registry tarball always contains a fresh build.
-
-### Publishing to npm (maintainers)
-
-```bash
-npm login
-npm publish
-```
-
-Scoped packages use `"publishConfig": { "access": "public" }` in `package.json` so the package is public. Bump `version` in `package.json` and update `CHANGELOG.md` before each release; tag the repo with `vX.Y.Z` to match [SemVer](https://semver.org/).
-
-### From source
-
-```bash
-npm install
-npm run build
-```
-
-If the repo **ignores** `build/`, run `npm run build` after every clone before pointing MCP at `build/index.js`.
+For installing the package or cloning the repo, see [Installation](./INSTALLATION.md).
 
 ---
 
