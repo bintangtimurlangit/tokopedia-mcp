@@ -11,7 +11,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Ver
 ### Added
 
 - Initial public release: Tokopedia MCP server over **stdio** (search, filters, product PDP, shop catalog, order history, wishlist).
-- npm package **`@bintangtimuralngit/tokopedia-mcp`**; CLI binary name **`tokopedia-mcp`**.
+- npm package **`@bintangtimurlangit/tokopedia-mcp`**; CLI binary name **`tokopedia-mcp`**.
 - Documentation: English and Indonesian READMEs, guides under `docs/`.
 
 [Unreleased]: https://github.com/bintangtimurlangit/tokopedia-mcp/compare/v1.0.0...HEAD

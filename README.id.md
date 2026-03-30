@@ -1,6 +1,6 @@
 # Tokopedia MCP
 
-[![npm](https://img.shields.io/npm/v/@bintangtimuralngit/tokopedia-mcp?style=flat-square)](https://www.npmjs.com/package/@bintangtimuralngit/tokopedia-mcp)
+[![npm](https://img.shields.io/npm/v/@bintangtimurlangit/tokopedia-mcp?style=flat-square)](https://www.npmjs.com/package/@bintangtimurlangit/tokopedia-mcp)
 [![license](https://img.shields.io/github/license/bintangtimurlangit/tokopedia-mcp?style=flat-square)](./LICENSE)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-tokopedia--mcp-24292f?style=flat-square&logo=github)](https://github.com/bintangtimurlangit/tokopedia-mcp)
 
@@ -58,19 +58,19 @@ Pencarian dan detail produk bisa tanpa login. Pesanan dan wishlist membutuhkan c
 
 ### Dari npm (disarankan)
 
-Nama paket: **`@bintangtimuralngit/tokopedia-mcp`**. Perintah di PATH tetap **`tokopedia-mcp`**.
+Nama paket: **`@bintangtimurlangit/tokopedia-mcp`**. Perintah di PATH tetap **`tokopedia-mcp`**.
 
 ```bash
-npm install -g @bintangtimuralngit/tokopedia-mcp
+npm install -g @bintangtimurlangit/tokopedia-mcp
 ```
 
 Tanpa instal global:
 
 ```bash
-npx -y @bintangtimuralngit/tokopedia-mcp
+npx -y @bintangtimurlangit/tokopedia-mcp
 ```
 
-Hubungkan klien MCP ke **`tokopedia-mcp`**, atau **`npx`** dengan **`["-y", "@bintangtimuralngit/tokopedia-mcp"]`** di `args` (lihat [Konfigurasi](#konfigurasi)).
+Hubungkan klien MCP ke **`tokopedia-mcp`**, atau **`npx`** dengan **`["-y", "@bintangtimurlangit/tokopedia-mcp"]`** di `args` (lihat [Konfigurasi](#konfigurasi)).
 
 ### Dari sumber (repositori ini)
 
@@ -110,7 +110,7 @@ Gabungkan ke konfigurasi klien Anda. Ganti placeholder dengan nilai cookie Anda:
   "mcpServers": {
     "tokopedia": {
       "command": "npx",
-      "args": ["-y", "@bintangtimuralngit/tokopedia-mcp"],
+      "args": ["-y", "@bintangtimurlangit/tokopedia-mcp"],
       "env": {
         "TOKO_SID": "paste_value_from_cookie__SID_Tokopedia_",
         "TOKO_UUID_CAS": "paste_value_from_cookie__UUID_CAS_",

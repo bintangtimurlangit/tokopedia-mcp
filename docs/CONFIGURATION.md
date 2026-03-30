@@ -55,7 +55,7 @@ For **search / product / shop tools only**, you can leave auth-related env vars 
   "mcpServers": {
     "tokopedia": {
       "command": "npx",
-      "args": ["-y", "@bintangtimuralngit/tokopedia-mcp"],
+      "args": ["-y", "@bintangtimurlangit/tokopedia-mcp"],
       "env": {
         "TOKO_SID": "paste_value_from_cookie__SID_Tokopedia_",
         "TOKO_UUID_CAS": "paste_value_from_cookie__UUID_CAS_",
@@ -83,7 +83,7 @@ If you only need orders/wishlist and want a minimal config:
   "mcpServers": {
     "tokopedia": {
       "command": "npx",
-      "args": ["-y", "@bintangtimuralngit/tokopedia-mcp"],
+      "args": ["-y", "@bintangtimurlangit/tokopedia-mcp"],
       "env": {
         "TOKO_SID": "paste_value_from_cookie__SID_Tokopedia_"
       }
@@ -125,4 +125,4 @@ Use the same **`mcpServers`** JSON as above.
 
 ## Other editors and tools
 
-VS Code MCP extensions, Zed, Windsurf, and any other **stdio MCP host** use the same pattern: register a server whose command is **`tokopedia-mcp`**, **`npx`** with **`["-y", "@bintangtimuralngit/tokopedia-mcp"]`**, or **`node`** plus the path to **`build/index.js`**, and pass Tokopedia cookies in **`env`** (or an env file if the host supports it).
+VS Code MCP extensions, Zed, Windsurf, and any other **stdio MCP host** use the same pattern: register a server whose command is **`tokopedia-mcp`**, **`npx`** with **`["-y", "@bintangtimurlangit/tokopedia-mcp"]`**, or **`node`** plus the path to **`build/index.js`**, and pass Tokopedia cookies in **`env`** (or an env file if the host supports it).
