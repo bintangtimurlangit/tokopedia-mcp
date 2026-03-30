@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/bintangtimurlangit/tokopedia-mcp#readme",
   "bin": {
-    "tokopedia-mcp": "./build/index.js"
+    "tokopedia-mcp": "build/index.js"
   },
   "scripts": {
     "build": "tsc",
