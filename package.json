@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bintangtimuralngit/tokopedia-mcp.git"
+    "url": "git+https://github.com/bintangtimurlangit/tokopedia-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/bintangtimuralngit/tokopedia-mcp/issues"
+    "url": "https://github.com/bintangtimurlangit/tokopedia-mcp/issues"
   },
-  "homepage": "https://github.com/bintangtimuralngit/tokopedia-mcp#readme",
+  "homepage": "https://github.com/bintangtimurlangit/tokopedia-mcp#readme",
   "bin": {
     "tokopedia-mcp": "./build/index.js"
   },

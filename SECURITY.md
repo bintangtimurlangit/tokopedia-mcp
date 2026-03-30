@@ -8,7 +8,7 @@ Security fixes are applied to the **latest release** on the default branch when 
 
 Please **do not** open a public GitHub issue for undisclosed security problems.
 
-1. Use [GitHub private vulnerability reporting](https://github.com/bintangtimuralngit/tokopedia-mcp/security/advisories/new) if it is enabled for this repository, **or**
+1. Use [GitHub private vulnerability reporting](https://github.com/bintangtimurlangit/tokopedia-mcp/security/advisories/new) if it is enabled for this repository, **or**
 2. Contact the maintainers via a private channel (e.g. email on your GitHub profile).
 
 Include:

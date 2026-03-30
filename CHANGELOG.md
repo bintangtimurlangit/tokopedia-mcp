@@ -14,5 +14,5 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Ver
 - npm package **`@bintangtimuralngit/tokopedia-mcp`**; CLI binary name **`tokopedia-mcp`**.
 - Documentation: English and Indonesian READMEs, guides under `docs/`.
 
-[Unreleased]: https://github.com/bintangtimuralngit/tokopedia-mcp/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/bintangtimuralngit/tokopedia-mcp/releases/tag/v1.0.0
+[Unreleased]: https://github.com/bintangtimurlangit/tokopedia-mcp/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/bintangtimurlangit/tokopedia-mcp/releases/tag/v1.0.0

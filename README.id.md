@@ -1,8 +1,8 @@
 # Tokopedia MCP
 
 [![npm](https://img.shields.io/npm/v/@bintangtimuralngit/tokopedia-mcp?style=flat-square)](https://www.npmjs.com/package/@bintangtimuralngit/tokopedia-mcp)
-[![license](https://img.shields.io/github/license/bintangtimuralngit/tokopedia-mcp?style=flat-square)](./LICENSE)
-[![GitHub Repo](https://img.shields.io/badge/GitHub-tokopedia--mcp-24292f?style=flat-square&logo=github)](https://github.com/bintangtimuralngit/tokopedia-mcp)
+[![license](https://img.shields.io/github/license/bintangtimurlangit/tokopedia-mcp?style=flat-square)](./LICENSE)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-tokopedia--mcp-24292f?style=flat-square&logo=github)](https://github.com/bintangtimurlangit/tokopedia-mcp)
 
 Server [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) yang menghubungkan asisten AI ke [Tokopedia](https://www.tokopedia.com) — marketplace Indonesia — sehingga bisa mencari produk, membaca detail, melihat toko, dan (dengan sesi Anda) mengelola pesanan serta wishlist.
 
@@ -75,7 +75,7 @@ Hubungkan klien MCP ke **`tokopedia-mcp`**, atau **`npx`** dengan **`["-y", "@bi
 ### Dari sumber (repositori ini)
 
 ```bash
-git clone https://github.com/bintangtimuralngit/tokopedia-mcp.git
+git clone https://github.com/bintangtimurlangit/tokopedia-mcp.git
 cd tokopedia-mcp
 npm install
 npm run build

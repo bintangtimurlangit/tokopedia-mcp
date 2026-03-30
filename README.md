@@ -1,8 +1,8 @@
 # Tokopedia MCP
 
 [![npm](https://img.shields.io/npm/v/@bintangtimuralngit/tokopedia-mcp?style=flat-square)](https://www.npmjs.com/package/@bintangtimuralngit/tokopedia-mcp)
-[![license](https://img.shields.io/github/license/bintangtimuralngit/tokopedia-mcp?style=flat-square)](./LICENSE)
-[![GitHub Repo](https://img.shields.io/badge/GitHub-tokopedia--mcp-24292f?style=flat-square&logo=github)](https://github.com/bintangtimuralngit/tokopedia-mcp)
+[![license](https://img.shields.io/github/license/bintangtimurlangit/tokopedia-mcp?style=flat-square)](./LICENSE)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-tokopedia--mcp-24292f?style=flat-square&logo=github)](https://github.com/bintangtimurlangit/tokopedia-mcp)
 
 A [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server that connects AI assistants to [Tokopedia](https://www.tokopedia.com) — Indonesia’s marketplace — so they can search products, read details, inspect shops, and (with your session) manage orders and wishlists.
 
@@ -75,7 +75,7 @@ Point your MCP client at **`tokopedia-mcp`**, or use **`npx`** with **`["-y", "@
 ### From source (this repository)
 
 ```bash
-git clone https://github.com/bintangtimuralngit/tokopedia-mcp.git
+git clone https://github.com/bintangtimurlangit/tokopedia-mcp.git
 cd tokopedia-mcp
 npm install
 npm run build

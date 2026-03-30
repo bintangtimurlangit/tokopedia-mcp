@@ -10,7 +10,7 @@ Thanks for helping improve this MCP server.
 ## Getting started
 
 ```bash
-git clone https://github.com/bintangtimuralngit/tokopedia-mcp.git
+git clone https://github.com/bintangtimurlangit/tokopedia-mcp.git
 cd tokopedia-mcp
 npm install
 npm run build
@@ -40,7 +40,7 @@ More detail: [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md).
 
 ## Questions
 
-Open a [GitHub issue](https://github.com/bintangtimuralngit/tokopedia-mcp/issues) for bugs, ideas, or design discussion before large refactors.
+Open a [GitHub issue](https://github.com/bintangtimurlangit/tokopedia-mcp/issues) for bugs, ideas, or design discussion before large refactors.
 
 ## AI-assisted contributions
 
