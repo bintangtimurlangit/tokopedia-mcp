@@ -1,6 +1,6 @@
 # Configuration
 
-For installing the package or cloning the repo, see [Installation](./INSTALLATION.md).
+For installing the package or cloning the repo, see **[Installation](../README.md#installation)** in the README.
 
 ---
 
@@ -22,11 +22,14 @@ These values come from your browser while logged in at [tokopedia.com](https://w
 
 **How to copy values**
 
-1. Log in to Tokopedia in your browser.
-2. Open DevTools (F12) → **Application** (Chrome) or **Storage** (Firefox) → **Cookies** → `https://www.tokopedia.com`.
-3. Find each cookie by **name** and paste its **value** into the matching variable in `.env` or `env`.
+1. Log in to [tokopedia.com](https://www.tokopedia.com) in your browser.
+2. Open DevTools (F12) → **Application** (Chrome) or **Storage** (Firefox) → **Cookies** → **`https://www.tokopedia.com`**.
+3. For each row in the table above, find the cookie **name** (e.g. `_SID_Tokopedia_`) and copy its **value** only.
+4. Put that value into the matching **`TOKO_*` key** in a `.env` file **or** inside the MCP config’s **`env`** object (see [Full `mcpServers` example with all env keys](#full-mcpservers-example-with-all-env-keys) below).
 
 Do not commit `.env`. Session cookies are secrets; treat them like passwords.
+
+**Minimum for authenticated tools:** set **`TOKO_SID`**. The other auth variables improve reliability; **`TOKO_DID_JS`** is optional.
 
 ### Optional tuning
 
@@ -41,7 +44,11 @@ Do not commit `.env`. Session cookies are secrets; treat them like passwords.
 
 This server uses **stdio**. **Any** MCP host that can spawn a local process works: add one entry under **`mcpServers`** in that host’s config. The shape is the same everywhere; only the **file path** and **UI** differ.
 
-### Example: npm / `npx` (recommended for end users)
+### Full `mcpServers` example with all env keys
+
+Copy cookie **values** from the browser into the **`env`** object (same names as [`.env.example`](../.env.example)). Replace the placeholders with your real values; omit optional keys or use `""` if you do not use them.
+
+For **search / product / shop tools only**, you can leave auth-related env vars empty or remove them. For **orders** and **wishlist**, at least **`TOKO_SID`** must be set.
 
 ```json
 {
@@ -50,46 +57,40 @@ This server uses **stdio**. **Any** MCP host that can spawn a local process work
       "command": "npx",
       "args": ["-y", "@bintangtimuralngit/tokopedia-mcp"],
       "env": {
-        "TOKO_SID": "paste_value_here"
+        "TOKO_SID": "paste_value_from_cookie__SID_Tokopedia_",
+        "TOKO_UUID_CAS": "paste_value_from_cookie__UUID_CAS_",
+        "TOKO_USER_ID": "paste_value_from_cookie_tuid",
+        "TOKO_DID": "paste_value_from_cookie_DID",
+        "TOKO_DID_JS": "paste_value_from_cookie_DID_JS",
+        "CACHE_TTL_MS": "30000",
+        "DEBUG": "false"
       }
     }
   }
 }
 ```
 
-### Example: global `npm install -g @bintangtimuralngit/tokopedia-mcp`
+Same keys work with **`command": "tokopedia-mcp"`** and **`args": []`** after a global install, or with **`command": "node"`** and **`args": ["/absolute/path/to/tokopedia-mcp/build/index.js"]`** when running from a clone.
+
+Use an **absolute** path to `build/index.js` when using `node`. Adjust drive letters and slashes for your OS.
+
+### Shorter example (auth minimum only)
+
+If you only need orders/wishlist and want a minimal config:
 
 ```json
 {
   "mcpServers": {
     "tokopedia": {
-      "command": "tokopedia-mcp",
-      "args": [],
+      "command": "npx",
+      "args": ["-y", "@bintangtimuralngit/tokopedia-mcp"],
       "env": {
-        "TOKO_SID": "paste_value_here"
+        "TOKO_SID": "paste_value_from_cookie__SID_Tokopedia_"
       }
     }
   }
 }
 ```
-
-### Example: local clone (`node` + path to `build/index.js`)
-
-```json
-{
-  "mcpServers": {
-    "tokopedia": {
-      "command": "node",
-      "args": ["E:/path/to/tokopedia-mcp/build/index.js"],
-      "env": {
-        "TOKO_SID": "paste_value_here"
-      }
-    }
-  }
-}
-```
-
-Use an **absolute** path to `build/index.js`. Adjust drive letters and slashes for your OS.
 
 ---
 

@@ -1,6 +1,7 @@
 # Tokopedia MCP
 
 [![npm](https://img.shields.io/npm/v/@bintangtimuralngit/tokopedia-mcp?style=flat-square)](https://www.npmjs.com/package/@bintangtimuralngit/tokopedia-mcp)
+[![license](https://img.shields.io/github/license/bintangtimuralngit/tokopedia-mcp?style=flat-square)](./LICENSE)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-tokopedia--mcp-24292f?style=flat-square&logo=github)](https://github.com/bintangtimuralngit/tokopedia-mcp)
 
 A [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server that connects AI assistants to [Tokopedia](https://www.tokopedia.com) — Indonesia’s marketplace — so they can search products, read details, inspect shops, and (with your session) manage orders and wishlists.
@@ -45,7 +46,7 @@ A [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server that c
 | `add_to_wishlist` | Add a product by ID. |
 | `remove_from_wishlist` | Remove items using wishlist IDs from `get_wishlist`. |
 
-Search and product tools work without logging in. Orders and wishlist need browser cookies — see [docs/CONFIGURATION.md](./docs/CONFIGURATION.md).
+Search and product tools work without logging in. Orders and wishlist need browser cookies — copy them into **`env`** or `.env` as below.
 
 ---
 
@@ -55,11 +56,76 @@ Search and product tools work without logging in. Orders and wishlist need brows
 
 ## Installation
 
-→ **[docs/INSTALLATION.md](./docs/INSTALLATION.md)** (`npm` / `npx`, clone, build)
+### From npm (recommended)
+
+Package name: **`@bintangtimuralngit/tokopedia-mcp`**. The CLI on your PATH is still **`tokopedia-mcp`**.
+
+```bash
+npm install -g @bintangtimuralngit/tokopedia-mcp
+```
+
+Or run without a global install:
+
+```bash
+npx -y @bintangtimuralngit/tokopedia-mcp
+```
+
+Point your MCP client at **`tokopedia-mcp`**, or use **`npx`** with **`["-y", "@bintangtimuralngit/tokopedia-mcp"]`** in `args` (see [Configuration](#configuration)).
+
+### From source (this repository)
+
+```bash
+git clone https://github.com/bintangtimuralngit/tokopedia-mcp.git
+cd tokopedia-mcp
+npm install
+npm run build
+```
+
+The repo does not commit **`build/`**; you must run **`npm run build`** after cloning before wiring MCP to **`build/index.js`**, or use **`npm start`** / **`npm link`** and the **`tokopedia-mcp`** command locally.
 
 ## Configuration
 
-→ **[docs/CONFIGURATION.md](./docs/CONFIGURATION.md)** — environment variables, cookies, **`mcpServers`** JSON, Cursor, Claude Code, Claude Desktop, other editors.
+### Cookies → env
+
+1. Log in to [tokopedia.com](https://www.tokopedia.com).
+2. Open DevTools (F12) → **Application** → **Cookies** → `https://www.tokopedia.com`.
+3. For each variable below, find the cookie **name** in the table (e.g. `_SID_Tokopedia_`) and copy its **value** into the matching **`TOKO_*`** key in your MCP **`env`** block (or in `.env` if you use an env file).
+
+| Env key | Browser cookie name |
+|---------|----------------------|
+| `TOKO_SID` | `_SID_Tokopedia_` |
+| `TOKO_UUID_CAS` | `_UUID_CAS_` |
+| `TOKO_USER_ID` | `tuid` |
+| `TOKO_DID` | `DID` |
+| `TOKO_DID_JS` | `DID_JS` (optional) |
+
+**Minimum for orders/wishlist:** `TOKO_SID`. Optional tuning: `CACHE_TTL_MS` (default `30000`), `DEBUG` (`true` / `false`).
+
+### `mcpServers` example (all env keys)
+
+Merge into your client’s config. Replace placeholders with your cookie values:
+
+```json
+{
+  "mcpServers": {
+    "tokopedia": {
+      "command": "npx",
+      "args": ["-y", "@bintangtimuralngit/tokopedia-mcp"],
+      "env": {
+        "TOKO_SID": "paste_value_from_cookie__SID_Tokopedia_",
+        "TOKO_UUID_CAS": "paste_value_from_cookie__UUID_CAS_",
+        "TOKO_USER_ID": "paste_value_from_cookie_tuid",
+        "TOKO_DID": "paste_value_from_cookie_DID",
+        "TOKO_DID_JS": "paste_value_from_cookie_DID_JS",
+        "CACHE_TTL_MS": "30000",
+        "DEBUG": "false"
+      }
+    }
+  }
+}
+```
+
+Cursor, Claude Code, Claude Desktop, and other hosts use the same `mcpServers` shape — see **[docs/CONFIGURATION.md](./docs/CONFIGURATION.md)** for global install, local `node` path, and client-specific file locations.
 
 ---
 
@@ -75,6 +141,14 @@ Once the server is wired to your assistant:
 ## Development
 
 → **[docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)**
+
+## Contributing & security
+
+[CONTRIBUTING.md](./CONTRIBUTING.md) · [SECURITY.md](./SECURITY.md) · [Code of Conduct](./CODE_OF_CONDUCT.md)
+
+## License
+
+[MIT](./LICENSE)
 
 ---
 

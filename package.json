@@ -2,6 +2,7 @@
   "name": "@bintangtimuralngit/tokopedia-mcp",
   "version": "1.0.0",
   "description": "A feature-rich MCP server for Tokopedia — search, product detail, shop info, orders, and wishlist",
+  "license": "MIT",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -28,7 +29,11 @@
     "build",
     ".env.example",
     "docs",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CODE_OF_CONDUCT.md"
   ],
   "keywords": [
     "mcp",
