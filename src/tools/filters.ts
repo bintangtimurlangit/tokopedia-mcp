@@ -79,30 +79,33 @@ export function registerFilterTools(server: McpServer): void {
         const { filter, sort } = data.data.filter_sort_product.data;
 
         const lines: string[] = [
-          `🔧 Available Filters & Sorts for "${query}"`,
+          `🔧 Filters & sorts for "${query}"`,
           '',
-          '## Sort Options',
+          'How to use: pass the chosen filter `key=value` pairs into search_products as the',
+          '`filters` argument, e.g. `filters={"shop_tier":"2","rt":"4,5"}`. Use `orderBy` for sort.',
+          '',
+          '## Sort (orderBy)',
         ];
 
         sort.forEach((s) => {
-          lines.push(`  • **${s.name}** — use \`orderBy: ${s.value}\``);
+          lines.push(`  • ${s.name} → \`orderBy=${s.value}\``);
         });
 
-        lines.push('', '## Filter Options');
+        lines.push('', '## Filters (add to the `filters` map)');
         filter.forEach((f) => {
           lines.push(``, `### ${f.title}`);
           const popular = f.options.filter((o) => o.isPopular);
-          const rest = f.options.filter((o) => !o.isPopular).slice(0, 10);
+          const rest = f.options.filter((o) => !o.isPopular).slice(0, 12);
           const shown = popular.length > 0 ? popular : rest;
 
           shown.forEach((o) => {
-            const count = o.totalData > 0 ? ` (${o.totalData.toLocaleString('id-ID')} products)` : '';
+            const count = o.totalData > 0 ? `  (${o.totalData.toLocaleString('id-ID')} products)` : '';
             const badge = o.isNew ? ' 🆕' : o.isPopular ? ' 🔥' : '';
-            lines.push(`  • **${o.name}**${badge}${count} — \`${o.key}=${o.value}\``);
+            lines.push(`  • ${o.name}${badge} → \`"${o.key}": "${o.value}"\`${count}`);
 
             if (o.child && o.child.length > 0) {
               o.child.slice(0, 5).forEach((c) => {
-                lines.push(`    └ ${c.name} — \`${c.key}=${c.value}\``);
+                lines.push(`    └ ${c.name} → \`"${c.key}": "${c.value}"\``);
               });
             }
           });

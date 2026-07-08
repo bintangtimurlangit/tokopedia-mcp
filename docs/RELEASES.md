@@ -23,11 +23,25 @@ Scoped packages use **`"publishConfig": { "access": "public" }`** so the package
 
 ## Publishing (maintainers)
 
+Releases are **automated** by the [`release` workflow](../.github/workflows/release.yml): pushing a `vX.Y.Z` tag runs typecheck + build and publishes to npm (with [provenance](https://docs.npmjs.com/generating-provenance-statements)), then creates a GitHub release.
+
+**One-time setup:** add an npm **automation token** as the repo secret **`NPM_TOKEN`** (Settings → Secrets and variables → Actions). Without it, the workflow still builds but skips the publish step.
+
+**To cut a release:**
+
 1. Bump **`version`** in **`package.json`** per SemVer rules.
 2. Update **`CHANGELOG.md`**: move items from **`[Unreleased]`** into **`[X.Y.Z] - YYYY-MM-DD`**, or add that section.
-3. Commit with Conventional Commits, e.g. `chore(release): v1.0.1`.
-4. Tag git: **`vX.Y.Z`** (e.g. `v1.0.1`).
-5. Publish:
+3. Commit with Conventional Commits, e.g. `chore(release): v2.0.1`.
+4. Tag and push:
+
+   ```bash
+   git tag v2.0.1
+   git push origin main --tags
+   ```
+
+5. The workflow publishes to npm and opens the GitHub release. Done.
+
+### Manual publish (fallback)
 
 ```bash
 npm login

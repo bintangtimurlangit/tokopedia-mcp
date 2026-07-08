@@ -25,9 +25,15 @@ More detail: [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md).
 3. **Run checks** before opening a PR:
 
    ```bash
-   npm run build
    npm run typecheck
+   npm run build
+   npm test          # live smoke test against Tokopedia's public API
    ```
+
+   > If you change a GraphQL query, verify it against the live API. Tokopedia's
+   > gateway only accepts queries whose field selection matches its registered
+   > schema, so a stale query fails with *"Invalid request schema received"*.
+   > See [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md).
 
 4. **Commit messages** should follow [Conventional Commits](https://www.conventionalcommits.org/) (e.g. `feat(tools): ...`, `fix(client): ...`, `docs: ...`).
 5. Open a **pull request** with a clear description of what changed and why.
@@ -36,7 +42,7 @@ More detail: [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md).
 
 - Bug fixes with steps to reproduce when possible
 - Documentation improvements (`README.md`, `docs/`, `README.id.md`)
-- Features that fit the project: Tokopedia access via MCP (search, PDP, shop, orders, wishlist) without breaking users’ setups
+- Features that fit the project's scope: **public** Tokopedia discovery via MCP — search, filters, product detail, reviews, and shops. This is a read-only, no-login tool; account actions (orders, wishlist, cart, checkout) are intentionally out of scope.
 
 ## Questions
 
