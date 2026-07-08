@@ -2,7 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { gqlRequest } from '../api/client.js';
 import { cache } from '../utils/cache.js';
-import { withErrorHandling, formatIDR, truncate } from '../utils/errors.js';
+import { withErrorHandling } from '../utils/errors.js';
 import type { SearchResponse, SearchProductParams } from '../api/types.js';
 
 const SEARCH_QUERY = `
@@ -101,46 +101,50 @@ function buildSearchParams(p: SearchProductParams): string {
   const start = (page - 1) * rows;
 
   const params = new URLSearchParams({
-    condition: String(p.condition ?? ''),
     device: 'desktop',
     enter_method: 'normal_search',
     l_name: 'sre',
     navsource: '',
-    fcity: p.location ?? '',
     ob: String(p.orderBy ?? 23),
     page: String(page),
     q: p.query,
-    rt: p.rating ?? '',
     pmin: String(p.priceMin ?? ''),
     pmax: String(p.priceMax ?? ''),
     related: 'true',
     rows: String(rows),
     safe_search: 'false',
-    sc: '',
     scheme: 'https',
-    shipping: '',
     show_adult: 'false',
     source: 'search',
     srp_component_id: '02.01.00.00',
-    srp_page_id: '',
-    srp_page_title: '',
     st: 'product',
     start: String(start),
     topads_bucket: 'true',
     unique_id: Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2),
     variants: '',
-    warehouses: '',
   });
+
+  // Merge arbitrary filter key=value pairs discovered via get_filters_and_sorts.
+  // These override defaults, so e.g. { shop_tier: "2", rt: "4,5", fcity: "165" }
+  // applies the Official-store, 4★+, and Bandung filters respectively.
+  if (p.filters) {
+    for (const [key, value] of Object.entries(p.filters)) {
+      if (value !== undefined && value !== null && value !== '') {
+        params.set(key, String(value));
+      }
+    }
+  }
 
   return params.toString();
 }
 
-
 export function registerSearchTools(server: McpServer): void {
-  // ── search_products ─────────────────────────────────────────────────────────
   server.tool(
     'search_products',
-    'Search for products on Tokopedia with filtering, sorting, and pagination. Returns product names, prices, ratings, shop details, and direct URLs.',
+    'Search for products on Tokopedia with sorting, price range, pagination, and arbitrary filters. ' +
+      'Returns product names, prices, ratings, shop details, product IDs, and direct URLs. ' +
+      'To narrow results (category, brand, Official/Power store, free shipping, location, condition, etc.), ' +
+      'first call get_filters_and_sorts to discover valid filter key=value pairs, then pass them in the `filters` argument.',
     {
       query: z.string().min(1).describe('The search query, e.g. "laptop gaming", "sepatu nike"'),
       page: z.number().int().min(1).default(1).describe('Page number (default: 1)'),
@@ -155,20 +159,18 @@ export function registerSearchTools(server: McpServer): void {
         .union([z.literal(23), z.literal(3), z.literal(4), z.literal(5), z.literal(8)])
         .optional()
         .describe('Sort: 23=relevance, 3=price low→high, 4=price high→low, 5=newest, 8=most sold'),
-      condition: z
-        .union([z.literal(1), z.literal(2)])
-        .optional()
-        .describe('Condition: 1=new, 2=used'),
-      rating: z
-        .string()
-        .optional()
-        .describe('Minimum rating filter, e.g. "4" or "4,5" for 4-5 stars'),
       priceMin: z.number().optional().describe('Minimum price in IDR'),
       priceMax: z.number().optional().describe('Maximum price in IDR'),
-      location: z
-        .string()
+      filters: z
+        .record(z.string(), z.string())
         .optional()
-        .describe('City/location ID(s), comma-separated. Use get_filters_and_sorts to find IDs.'),
+        .describe(
+          'Filter key=value pairs from get_filters_and_sorts. Examples: ' +
+            '{"shop_tier":"2"} = Official/Mall stores, {"shop_tier":"3"} = Power stores, ' +
+            '{"rt":"4,5"} = rating 4★ and up, {"fcity":"165"} = a location ID, ' +
+            '{"condition":"1"} = new, {"sc":"<categoryId>"} = category, {"preorder":"false"} = ready stock. ' +
+            'Multiple filters combine, e.g. {"shop_tier":"2","rt":"4,5"}.'
+        ),
     },
     async (params) => {
       return withErrorHandling(async () => {
@@ -178,11 +180,9 @@ export function registerSearchTools(server: McpServer): void {
           params.page,
           params.rows,
           params.orderBy,
-          params.condition,
-          params.rating,
           params.priceMin,
           params.priceMax,
-          params.location
+          params.filters ? JSON.stringify(params.filters) : undefined
         );
 
         const cached = cache.get<string>(cacheKey);
@@ -190,11 +190,9 @@ export function registerSearchTools(server: McpServer): void {
 
         const searchParams = buildSearchParams(params as SearchProductParams);
 
-        const data = await gqlRequest<SearchResponse>(
-          'SearchProductV5Query',
-          SEARCH_QUERY,
-          { params: searchParams }
-        );
+        const data = await gqlRequest<SearchResponse>('SearchProductV5Query', SEARCH_QUERY, {
+          params: searchParams,
+        });
 
         const header = data.data.searchProductV5.header;
         const products = data.data.searchProductV5.data.products ?? [];
@@ -204,7 +202,7 @@ export function registerSearchTools(server: McpServer): void {
             content: [
               {
                 type: 'text',
-                text: `No products found for "${params.query}". Try a different keyword or remove filters.`,
+                text: `No products found for "${params.query}". Try a different keyword or loosen the filters.`,
               },
             ],
           };
@@ -215,23 +213,31 @@ export function registerSearchTools(server: McpServer): void {
         const totalData = header.totalData;
         const totalPages = Math.ceil(totalData / rows);
 
+        const filterNote =
+          params.filters && Object.keys(params.filters).length > 0
+            ? ` | filters: ${Object.entries(params.filters)
+                .map(([k, v]) => `${k}=${v}`)
+                .join(', ')}`
+            : '';
+
         const lines: string[] = [
           `🛒 Search Results for "${header.keywordProcess || params.query}"`,
-          `📊 ${totalData.toLocaleString('id-ID')} total products | Page ${page}/${totalPages}`,
+          `📊 ${totalData.toLocaleString('id-ID')} total products | Page ${page}/${totalPages}${filterNote}`,
           ``,
         ];
 
         products.forEach((p, i) => {
           const discount =
-            p.price.discountPercentage > 0
-              ? ` (-${p.price.discountPercentage}%)`
-              : '';
+            p.price.discountPercentage > 0 ? ` (-${p.price.discountPercentage}%)` : '';
           const freeShip = p.freeShipping?.url ? ' 🚚 Free shipping' : '';
-          const officialBadge = p.shop.tier === 3 ? ' [Official Store]' : p.shop.tier === 2 ? ' [Power Merchant]' : '';
+          const officialBadge =
+            p.shop.tier === 3 ? ' [Power Store]' : p.shop.tier === 2 ? ' [Official Store]' : '';
 
           lines.push(`${(page - 1) * rows + i + 1}. **${p.name}**`);
           lines.push(`   💰 ${p.price.text}${discount}${freeShip}`);
-          lines.push(`   ⭐ ${p.rating || 'N/A'} | 🏪 ${p.shop.name}${officialBadge} (${p.shop.city})`);
+          lines.push(
+            `   ⭐ ${p.rating || 'N/A'} | 🏪 ${p.shop.name}${officialBadge} (${p.shop.city}) | 🆔 ${p.id}`
+          );
           lines.push(`   🔗 ${p.url}`);
           if (i < products.length - 1) lines.push('');
         });

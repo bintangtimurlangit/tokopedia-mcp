@@ -21,4 +21,6 @@ We aim to acknowledge reports within a few days and coordinate disclosure after 
 
 ## Scope
 
-This project is a **local MCP server** that talks to **Tokopedia** over the network and may hold **session cookies** you provide (`TOKO_SID`, etc.). Issues in **Tokopedia’s services** or **upstream** dependencies (e.g. `@modelcontextprotocol/sdk`) should be reported to those projects when appropriate. Protect your `.env` and MCP `env` the same way you protect passwords.
+This project is a **local MCP server** that talks to **Tokopedia** over the network. It is **read-only and unauthenticated** — it uses no login, stores no credentials, and only reads public product, shop, and review data. There are no session cookies or secrets to protect.
+
+Issues in **Tokopedia's services** or in **upstream** dependencies (e.g. `@modelcontextprotocol/sdk`) should be reported to those projects when appropriate.

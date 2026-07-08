@@ -1,0 +1,51 @@
+name: Bug report
+description: A tool returns an error, wrong data, or stops working
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. This MCP scrapes Tokopedia's **unofficial** GraphQL API, so a tool can break when Tokopedia changes its site. Details help a lot.
+  - type: dropdown
+    id: tool
+    attributes:
+      label: Which tool?
+      options:
+        - search_products
+        - get_filters_and_sorts
+        - get_product_detail
+        - get_product_reviews
+        - get_shop_info
+        - get_shop_products
+        - Other / not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you call, what did you expect, and what did you get? Paste the tool's response text (redact anything private).
+    validations:
+      required: true
+  - type: input
+    id: repro-args
+    attributes:
+      label: Arguments used
+      placeholder: 'e.g. search_products({ query: "laptop", filters: { shop_tier: "2" } })'
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: 'e.g. 2.0.0 (npm ls @bintangtimurlangit/tokopedia-mcp)'
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: 'e.g. 20.11.0 (node -v)'
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I ran `npm test` (or `npm run build`) and included any relevant output
+        - label: I searched existing issues for a duplicate

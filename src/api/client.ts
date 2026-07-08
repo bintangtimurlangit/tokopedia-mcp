@@ -16,40 +16,6 @@ const BASE_HEADERS: Record<string, string> = {
   'X-Version': '1.0',
 };
 
-/** Assembles the Cookie header from individual env vars. */
-function buildCookieString(): string {
-  const parts: string[] = [];
-
-  const add = (name: string, value: string | undefined) => {
-    if (value) parts.push(`${name}=${value}`);
-  };
-
-  add('_SID_Tokopedia_', process.env.TOKO_SID);
-  add('_UUID_CAS_',      process.env.TOKO_UUID_CAS);
-  add('tuid',            process.env.TOKO_USER_ID);
-  add('DID',             process.env.TOKO_DID);
-  add('DID_JS',          process.env.TOKO_DID_JS);
-
-  return parts.join('; ');
-}
-
-export function getHeaders(requiresAuth = false): Record<string, string> {
-  const cookie = buildCookieString();
-
-  if (requiresAuth && !process.env.TOKO_SID) {
-    throw new Error(
-      'TOKO_SID is required for this operation. ' +
-        'Log into tokopedia.com, open DevTools (F12) → Application → Cookies → www.tokopedia.com, ' +
-        'find the cookie named "_SID_Tokopedia_", and copy its value into TOKO_SID in your .env file.'
-    );
-  }
-
-  return {
-    ...BASE_HEADERS,
-    ...(cookie ? { Cookie: cookie } : {}),
-  };
-}
-
 export class TokopediaAPIError extends Error {
   constructor(
     message: string,
@@ -61,20 +27,23 @@ export class TokopediaAPIError extends Error {
   }
 }
 
+/**
+ * Issues a GraphQL request against Tokopedia's public gateway.
+ *
+ * Only public, unauthenticated discovery operations are used — there are no
+ * cookies or session tokens involved.
+ */
 export async function gqlRequest<T>(
   operationName: string,
   query: string,
-  variables?: Record<string, unknown>,
-  requiresAuth = false
+  variables?: Record<string, unknown>
 ): Promise<T> {
   const url = `${TOKOPEDIA_GQL}/${operationName}`;
-  const headers = getHeaders(requiresAuth);
-
   const body = JSON.stringify({ operationName, query, variables: variables ?? {} });
 
   let response: Response;
   try {
-    response = await fetch(url, { method: 'POST', headers, body });
+    response = await fetch(url, { method: 'POST', headers: BASE_HEADERS, body });
   } catch (err) {
     throw new TokopediaAPIError(
       `Network error calling ${operationName}: ${err instanceof Error ? err.message : String(err)}`,

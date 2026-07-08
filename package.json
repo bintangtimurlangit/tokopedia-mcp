@@ -1,7 +1,7 @@
 {
   "name": "@bintangtimurlangit/tokopedia-mcp",
-  "version": "1.0.0",
-  "description": "A feature-rich MCP server for Tokopedia — search, product detail, shop info, orders, and wishlist",
+  "version": "2.0.0",
+  "description": "A zero-config MCP server for discovering Tokopedia — product search with full dynamic filtering, product detail, customer reviews, and shop info. No login required.",
   "license": "MIT",
   "type": "module",
   "publishConfig": {
@@ -19,10 +19,13 @@
     "tokopedia-mcp": "build/index.js"
   },
   "scripts": {
+    "clean": "node -e \"require('fs').rmSync('build',{recursive:true,force:true})\"",
+    "prebuild": "npm run clean",
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
     "start": "node build/index.js",
     "typecheck": "tsc --noEmit",
+    "test": "tsx test/smoke.ts",
     "prepublishOnly": "npm run build"
   },
   "files": [
@@ -41,17 +44,20 @@
     "tokopedia",
     "indonesia",
     "ecommerce",
-    "marketplace"
+    "marketplace",
+    "product-search",
+    "reviews",
+    "discovery"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.15.0",
-    "dotenv": "^16.4.5",
-    "zod": "^3.23.8"
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "dotenv": "^17.4.2",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
-    "tsx": "^4.19.0",
-    "typescript": "^5.7.0"
+    "@types/node": "^24.0.0",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.0"
   },
   "engines": {
     "node": ">=18.0.0"
