@@ -73,7 +73,7 @@ export function registerFilterTools(server: McpServer): void {
         const data = await gqlRequest<FilterSortResponse>(
           'FilterSortProductQuery',
           FILTER_SORT_QUERY,
-          { params }
+          { params },
         );
 
         const { filter, sort } = data.data.filter_sort_product.data;
@@ -99,7 +99,8 @@ export function registerFilterTools(server: McpServer): void {
           const shown = popular.length > 0 ? popular : rest;
 
           shown.forEach((o) => {
-            const count = o.totalData > 0 ? `  (${o.totalData.toLocaleString('id-ID')} products)` : '';
+            const count =
+              o.totalData > 0 ? `  (${o.totalData.toLocaleString('id-ID')} products)` : '';
             const badge = o.isNew ? ' 🆕' : o.isPopular ? ' 🔥' : '';
             lines.push(`  • ${o.name}${badge} → \`"${o.key}": "${o.value}"\`${count}`);
 
@@ -119,6 +120,6 @@ export function registerFilterTools(server: McpServer): void {
         cache.set(cacheKey, text);
         return { content: [{ type: 'text', text }] };
       });
-    }
+    },
   );
 }

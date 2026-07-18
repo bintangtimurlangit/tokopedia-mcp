@@ -53,14 +53,14 @@ async function fetchProductPage(url: string): Promise<string> {
     throw new TokopediaAPIError(
       `Network error loading product page: ${err instanceof Error ? err.message : String(err)}`,
       undefined,
-      'productPage'
+      'productPage',
     );
   }
   if (!res.ok) {
     throw new TokopediaAPIError(
       `Tokopedia returned HTTP ${res.status} for the product page`,
       res.status,
-      'productPage'
+      'productPage',
     );
   }
   return res.text();
@@ -69,7 +69,7 @@ async function fetchProductPage(url: string): Promise<string> {
 function metaContent(html: string, key: string): string | undefined {
   const re = new RegExp(
     `<meta[^>]+(?:property|name)="${key.replace(/[:]/g, '\\:')}"[^>]+content="([^"]*)"`,
-    'i'
+    'i',
   );
   const m = html.match(re);
   return m ? m[1] : undefined;
@@ -105,7 +105,9 @@ export function registerProductTools(server: McpServer): void {
         .string()
         .url()
         .optional()
-        .describe('Full Tokopedia product URL, e.g. https://www.tokopedia.com/shop-name/product-name'),
+        .describe(
+          'Full Tokopedia product URL, e.g. https://www.tokopedia.com/shop-name/product-name',
+        ),
       shopDomain: z.string().optional().describe('Shop domain/slug, e.g. "dell-official"'),
       productKey: z
         .string()
@@ -173,8 +175,13 @@ export function registerProductTools(server: McpServer): void {
         }
 
         const conditionLabel =
-          basic.condition === 'NEW' ? 'New' : basic.condition === 'USED' ? 'Used' : basic.condition || 'Unknown';
-        const price = priceFmt || (priceAmount ? `Rp${Number(priceAmount).toLocaleString('id-ID')}` : 'N/A');
+          basic.condition === 'NEW'
+            ? 'New'
+            : basic.condition === 'USED'
+              ? 'Used'
+              : basic.condition || 'Unknown';
+        const price =
+          priceFmt || (priceAmount ? `Rp${Number(priceAmount).toLocaleString('id-ID')}` : 'N/A');
 
         const lines: string[] = [
           `📦 **${name || 'Product'}**`,
@@ -183,7 +190,9 @@ export function registerProductTools(server: McpServer): void {
           '',
           `📊 **Stats:**`,
           `  ⭐ Rating: ${stats.rating ?? 'N/A'}${stats.countReview ? ` (${Number(stats.countReview).toLocaleString('id-ID')} reviews)` : ''}`,
-          stats.countTalk ? `  💬 Discussions: ${Number(stats.countTalk).toLocaleString('id-ID')}` : '',
+          stats.countTalk
+            ? `  💬 Discussions: ${Number(stats.countTalk).toLocaleString('id-ID')}`
+            : '',
           stats.countView ? `  👁 Views: ${Number(stats.countView).toLocaleString('id-ID')}` : '',
           `  ✅ Sold: ${txStats.itemSoldFmt ?? txStats.countSold ?? '0'}`,
           '',
@@ -191,10 +200,14 @@ export function registerProductTools(server: McpServer): void {
           `  🏷 Condition: ${conditionLabel}`,
           basic.weight ? `  ⚖ Weight: ${basic.weight} ${basic.weightUnit ?? ''}`.trimEnd() : '',
           basic.minOrder ? `  📦 Min Order: ${basic.minOrder}` : '',
-          basic.status ? `  📶 Status: ${basic.status === 'ACTIVE' ? 'Available' : basic.status}` : '',
+          basic.status
+            ? `  📶 Status: ${basic.status === 'ACTIVE' ? 'Available' : basic.status}`
+            : '',
           `  🏪 Shop: ${basic.shopName ?? 'Unknown'}`,
           location ? `  📍 Location: ${location}` : '',
-          basic.productID ? `  🆔 Product ID: \`${basic.productID}\` (use with get_product_reviews)` : '',
+          basic.productID
+            ? `  🆔 Product ID: \`${basic.productID}\` (use with get_product_reviews)`
+            : '',
         ].filter((l) => l !== '');
 
         if (description) {
@@ -209,6 +222,6 @@ export function registerProductTools(server: McpServer): void {
         cache.set(cacheKey, text);
         return { content: [{ type: 'text', text }] };
       });
-    }
+    },
   );
 }

@@ -2,14 +2,14 @@
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm install` | Install dependencies |
-| `npm run build` | Compile TypeScript to `build/` (`tsc`) |
-| `npm run dev` | Watch mode: `tsx watch src/index.ts` |
-| `npm run start` | Run compiled server: `node build/index.js` |
-| `npm run typecheck` | `tsc --noEmit`, strict, with unused-symbol checks |
-| `npm test` | **Live health check** — spawns the server and calls every tool against the real Tokopedia API |
+| Command             | Description                                                                                   |
+| ------------------- | --------------------------------------------------------------------------------------------- |
+| `npm install`       | Install dependencies                                                                          |
+| `npm run build`     | Compile TypeScript to `build/` (`tsc`)                                                        |
+| `npm run dev`       | Watch mode: `tsx watch src/index.ts`                                                          |
+| `npm run start`     | Run compiled server: `node build/index.js`                                                    |
+| `npm run typecheck` | `tsc --noEmit`, strict, with unused-symbol checks                                             |
+| `npm test`          | **Live health check** — spawns the server and calls every tool against the real Tokopedia API |
 
 ## Project layout
 

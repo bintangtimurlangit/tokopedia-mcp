@@ -275,7 +275,8 @@ export function registerShopTools(server: McpServer): void {
           return { content: [{ type: 'text', text: '❌ Shop not found.' }] };
         }
 
-        const { shopCore, favoriteData, shopStats, statusInfo, closedInfo, goldOS, createInfo } = shop;
+        const { shopCore, favoriteData, shopStats, statusInfo, closedInfo, goldOS, createInfo } =
+          shop;
 
         const badges: string[] = [];
         if (goldOS.isOfficial) badges.push('🏅 Official Store');
@@ -307,7 +308,7 @@ export function registerShopTools(server: McpServer): void {
         cache.set(cacheKey, text);
         return { content: [{ type: 'text', text }] };
       });
-    }
+    },
   );
 
   // ── get_shop_products ────────────────────────────────────────────────────────
@@ -319,9 +320,20 @@ export function registerShopTools(server: McpServer): void {
         .string()
         .optional()
         .describe('Shop domain/slug from the URL, e.g. "apple-authorized-reseller"'),
-      shopId: z.number().int().positive().optional().describe('Numeric shop ID (alternative to shopDomain)'),
+      shopId: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe('Numeric shop ID (alternative to shopDomain)'),
       page: z.number().int().min(1).default(1).describe('Page number (default: 1)'),
-      perPage: z.number().int().min(1).max(80).default(20).describe('Results per page, max 80 (default: 20)'),
+      perPage: z
+        .number()
+        .int()
+        .min(1)
+        .max(80)
+        .default(20)
+        .describe('Results per page, max 80 (default: 20)'),
       keyword: z.string().optional().describe('Search within the shop by product name'),
       sort: z
         .union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)])
@@ -336,7 +348,15 @@ export function registerShopTools(server: McpServer): void {
           };
         }
 
-        const cacheKey = cache.key('shop_products', shopId, shopDomain, page, perPage, keyword, sort);
+        const cacheKey = cache.key(
+          'shop_products',
+          shopId,
+          shopDomain,
+          page,
+          perPage,
+          keyword,
+          sort,
+        );
         const cached = cache.get<string>(cacheKey);
         if (cached) return { content: [{ type: 'text', text: cached }] };
 
@@ -415,6 +435,6 @@ export function registerShopTools(server: McpServer): void {
         cache.set(cacheKey, text);
         return { content: [{ type: 'text', text }] };
       });
-    }
+    },
   );
 }

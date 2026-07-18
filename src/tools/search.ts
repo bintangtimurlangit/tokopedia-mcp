@@ -169,7 +169,7 @@ export function registerSearchTools(server: McpServer): void {
             '{"shop_tier":"2"} = Official/Mall stores, {"shop_tier":"3"} = Power stores, ' +
             '{"rt":"4,5"} = rating 4★ and up, {"fcity":"165"} = a location ID, ' +
             '{"condition":"1"} = new, {"sc":"<categoryId>"} = category, {"preorder":"false"} = ready stock. ' +
-            'Multiple filters combine, e.g. {"shop_tier":"2","rt":"4,5"}.'
+            'Multiple filters combine, e.g. {"shop_tier":"2","rt":"4,5"}.',
         ),
     },
     async (params) => {
@@ -182,7 +182,7 @@ export function registerSearchTools(server: McpServer): void {
           params.orderBy,
           params.priceMin,
           params.priceMax,
-          params.filters ? JSON.stringify(params.filters) : undefined
+          params.filters ? JSON.stringify(params.filters) : undefined,
         );
 
         const cached = cache.get<string>(cacheKey);
@@ -236,7 +236,7 @@ export function registerSearchTools(server: McpServer): void {
           lines.push(`${(page - 1) * rows + i + 1}. **${p.name}**`);
           lines.push(`   💰 ${p.price.text}${discount}${freeShip}`);
           lines.push(
-            `   ⭐ ${p.rating || 'N/A'} | 🏪 ${p.shop.name}${officialBadge} (${p.shop.city}) | 🆔 ${p.id}`
+            `   ⭐ ${p.rating || 'N/A'} | 🏪 ${p.shop.name}${officialBadge} (${p.shop.city}) | 🆔 ${p.id}`,
           );
           lines.push(`   🔗 ${p.url}`);
           if (i < products.length - 1) lines.push('');
@@ -250,6 +250,6 @@ export function registerSearchTools(server: McpServer): void {
         cache.set(cacheKey, text);
         return { content: [{ type: 'text', text }] };
       });
-    }
+    },
   );
 }

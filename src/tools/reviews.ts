@@ -120,7 +120,13 @@ export function registerReviewTools(server: McpServer): void {
         .min(1)
         .describe('Numeric product ID (from search_products `id` field), e.g. "13164846045"'),
       page: z.number().int().min(1).default(1).describe('Page number (default: 1)'),
-      limit: z.number().int().min(1).max(20).default(10).describe('Reviews per page, max 20 (default: 10)'),
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(20)
+        .default(10)
+        .describe('Reviews per page, max 20 (default: 10)'),
       sort: z
         .enum(['most_helpful', 'newest', 'highest_rating', 'lowest_rating'])
         .default('most_helpful')
@@ -146,7 +152,9 @@ export function registerReviewTools(server: McpServer): void {
 
         const result = data.data?.productrevGetProductReviewList;
         if (!result) {
-          return { content: [{ type: 'text', text: '❌ Could not load reviews for this product.' }] };
+          return {
+            content: [{ type: 'text', text: '❌ Could not load reviews for this product.' }],
+          };
         }
 
         const { list, totalReviews, hasNext } = result;
@@ -172,7 +180,8 @@ export function registerReviewTools(server: McpServer): void {
         ];
 
         list.forEach((r, i) => {
-          const stars = '★'.repeat(Math.round(r.productRating)) + '☆'.repeat(5 - Math.round(r.productRating));
+          const stars =
+            '★'.repeat(Math.round(r.productRating)) + '☆'.repeat(5 - Math.round(r.productRating));
           const who = r.isAnonymous ? 'Anonymous' : r.user?.fullName || 'Tokopedia user';
           const likes = r.likeDislike?.totalLike ? ` 👍 ${r.likeDislike.totalLike}` : '';
           lines.push(`${(currentPage - 1) * (limit ?? 10) + i + 1}. ${stars} — **${who}**${likes}`);
@@ -182,7 +191,9 @@ export function registerReviewTools(server: McpServer): void {
             lines.push(`   🖼 ${r.imageAttachments.length} photo(s) attached`);
           }
           if (r.reviewResponse?.message) {
-            lines.push(`   ↳ 🏪 Seller: ${truncate(r.reviewResponse.message.replace(/\n+/g, ' ').trim(), 200)}`);
+            lines.push(
+              `   ↳ 🏪 Seller: ${truncate(r.reviewResponse.message.replace(/\n+/g, ' ').trim(), 200)}`,
+            );
           }
           lines.push(`   📅 ${r.reviewCreateTime}`);
           if (i < list.length - 1) lines.push('');
@@ -196,6 +207,6 @@ export function registerReviewTools(server: McpServer): void {
         cache.set(cacheKey, text);
         return { content: [{ type: 'text', text }] };
       });
-    }
+    },
   );
 }

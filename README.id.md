@@ -25,14 +25,14 @@ Server [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) yang mem
 
 ## Tool
 
-| Tool | Deskripsi |
-|------|-----------|
-| `search_products` | Pencarian kata kunci dengan pagination, urutan (`orderBy`), rentang harga, dan map **`filters`** generik (lihat [Filter](#filter)). Mengembalikan nama, harga, rating, info toko, **ID produk**, dan URL. |
-| `get_filters_and_sorts` | Temukan opsi filter dan sort yang valid untuk suatu query — pasangan `key=value` untuk dipakai di `search_products`. |
-| `get_product_detail` | Data halaman produk: nama, harga, kondisi, berat, penjual, rating, jumlah ulasan/terjual, dan ID produk. Menerima URL produk atau `shopDomain` + `productKey`. |
-| `get_product_reviews` | Ulasan pelanggan untuk sebuah produk: rating, teks, varian yang dibeli, balasan penjual. Menerima ID produk. |
-| `get_shop_info` | Profil toko: statistik, lokasi, status buka, badge Official/Power Merchant. Menerima domain atau ID toko. |
-| `get_shop_products` | Katalog toko dengan pagination, pencarian kata kunci dalam toko, dan pengurutan. |
+| Tool                    | Deskripsi                                                                                                                                                                                                 |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search_products`       | Pencarian kata kunci dengan pagination, urutan (`orderBy`), rentang harga, dan map **`filters`** generik (lihat [Filter](#filter)). Mengembalikan nama, harga, rating, info toko, **ID produk**, dan URL. |
+| `get_filters_and_sorts` | Temukan opsi filter dan sort yang valid untuk suatu query — pasangan `key=value` untuk dipakai di `search_products`.                                                                                      |
+| `get_product_detail`    | Data halaman produk: nama, harga, kondisi, berat, penjual, rating, jumlah ulasan/terjual, dan ID produk. Menerima URL produk atau `shopDomain` + `productKey`.                                            |
+| `get_product_reviews`   | Ulasan pelanggan untuk sebuah produk: rating, teks, varian yang dibeli, balasan penjual. Menerima ID produk.                                                                                              |
+| `get_shop_info`         | Profil toko: statistik, lokasi, status buka, badge Official/Power Merchant. Menerima domain atau ID toko.                                                                                                 |
+| `get_shop_products`     | Katalog toko dengan pagination, pencarian kata kunci dalam toko, dan pengurutan.                                                                                                                          |
 
 Semua tool bersifat publik — tidak ada yang butuh login.
 
@@ -102,10 +102,10 @@ Repositori tidak menyertakan **`build/`** di git; jalankan **`npm run build`** s
 
 Variabel lingkungan opsional:
 
-| Kunci env | Bawaan | Fungsi |
-|-----------|--------|--------|
-| `CACHE_TTL_MS` | `30000` | Masa cache memori dalam milidetik. |
-| `DEBUG` | `false` | Set `true` untuk info startup ke stderr. |
+| Kunci env      | Bawaan  | Fungsi                                   |
+| -------------- | ------- | ---------------------------------------- |
+| `CACHE_TTL_MS` | `30000` | Masa cache memori dalam milidetik.       |
+| `DEBUG`        | `false` | Set `true` untuk info startup ke stderr. |
 
 Cursor, Claude Code, Claude Desktop, dan host lain memakai bentuk `mcpServers` yang sama — lihat **[docs/CONFIGURATION.md](./docs/CONFIGURATION.md)**.
 

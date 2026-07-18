@@ -20,7 +20,7 @@ export class TokopediaAPIError extends Error {
   constructor(
     message: string,
     public readonly statusCode?: number,
-    public readonly endpoint?: string
+    public readonly endpoint?: string,
   ) {
     super(message);
     this.name = 'TokopediaAPIError';
@@ -36,7 +36,7 @@ export class TokopediaAPIError extends Error {
 export async function gqlRequest<T>(
   operationName: string,
   query: string,
-  variables?: Record<string, unknown>
+  variables?: Record<string, unknown>,
 ): Promise<T> {
   const url = `${TOKOPEDIA_GQL}/${operationName}`;
   const body = JSON.stringify({ operationName, query, variables: variables ?? {} });
@@ -48,7 +48,7 @@ export async function gqlRequest<T>(
     throw new TokopediaAPIError(
       `Network error calling ${operationName}: ${err instanceof Error ? err.message : String(err)}`,
       undefined,
-      operationName
+      operationName,
     );
   }
 
@@ -56,7 +56,7 @@ export async function gqlRequest<T>(
     throw new TokopediaAPIError(
       `Tokopedia API returned HTTP ${response.status} for ${operationName}`,
       response.status,
-      operationName
+      operationName,
     );
   }
 
@@ -64,7 +64,11 @@ export async function gqlRequest<T>(
 
   if (json.errors && json.errors.length > 0) {
     const msg = json.errors.map((e) => e.message).join('; ');
-    throw new TokopediaAPIError(`GraphQL error in ${operationName}: ${msg}`, undefined, operationName);
+    throw new TokopediaAPIError(
+      `GraphQL error in ${operationName}: ${msg}`,
+      undefined,
+      operationName,
+    );
   }
 
   return json;

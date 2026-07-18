@@ -15,7 +15,7 @@ A [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server that l
 
 ---
 
-## What you get
+## Features
 
 - **stdio transport** — Works with Cursor, Claude Code, Claude Desktop, VS Code, and any MCP client that launches a local process.
 - **Public Tokopedia data** — Search, filters, product detail, reviews, and shops. No authentication.
@@ -25,14 +25,14 @@ A [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server that l
 
 ## Tools
 
-| Tool | Description |
-|------|-------------|
-| `search_products` | Keyword search with pagination, sort (`orderBy`), price range, and a generic **`filters`** map (see [Filtering](#filtering)). Returns names, prices, ratings, shop info, **product IDs**, and URLs. |
-| `get_filters_and_sorts` | Discover the valid filter and sort options for a query — the `key=value` pairs to feed into `search_products`. |
-| `get_product_detail` | Product page data: name, price, condition, weight, seller, rating, review/sold counts, and the numeric product ID. Takes a product URL or `shopDomain` + `productKey`. |
-| `get_product_reviews` | Customer reviews for a product: rating, text, variant purchased, seller responses. Takes a product ID. |
-| `get_shop_info` | Shop profile: stats, location, open status, Official/Power Merchant badges. Takes a shop domain or ID. |
-| `get_shop_products` | Paginated catalog for a shop, with in-shop keyword search and sorting. |
+| Tool                    | Description                                                                                                                                                                                         |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search_products`       | Keyword search with pagination, sort (`orderBy`), price range, and a generic **`filters`** map (see [Filtering](#filtering)). Returns names, prices, ratings, shop info, **product IDs**, and URLs. |
+| `get_filters_and_sorts` | Discover the valid filter and sort options for a query — the `key=value` pairs to feed into `search_products`.                                                                                      |
+| `get_product_detail`    | Product page data: name, price, condition, weight, seller, rating, review/sold counts, and the numeric product ID. Takes a product URL or `shopDomain` + `productKey`.                              |
+| `get_product_reviews`   | Customer reviews for a product: rating, text, variant purchased, seller responses. Takes a product ID.                                                                                              |
+| `get_shop_info`         | Shop profile: stats, location, open status, Official/Power Merchant badges. Takes a shop domain or ID.                                                                                              |
+| `get_shop_products`     | Paginated catalog for a shop, with in-shop keyword search and sorting.                                                                                                                              |
 
 All tools are public — no login required for any of them.
 
@@ -102,10 +102,10 @@ There is **nothing to authenticate**. Add the server to your MCP client and you'
 
 Optional environment variables:
 
-| Env key | Default | Purpose |
-|---------|---------|---------|
-| `CACHE_TTL_MS` | `30000` | In-memory cache lifetime in milliseconds. |
-| `DEBUG` | `false` | Set to `true` to log startup info to stderr. |
+| Env key        | Default | Purpose                                      |
+| -------------- | ------- | -------------------------------------------- |
+| `CACHE_TTL_MS` | `30000` | In-memory cache lifetime in milliseconds.    |
+| `DEBUG`        | `false` | Set to `true` to log startup info to stderr. |
 
 Cursor, Claude Code, Claude Desktop, and other hosts use the same `mcpServers` shape — see **[docs/CONFIGURATION.md](./docs/CONFIGURATION.md)** for global-install and local `node` path variants and client-specific file locations.
 
@@ -122,7 +122,17 @@ Once the server is wired to your assistant:
 
 ## Development
 
-→ **[docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)**. Run the live health check with `npm test`.
+→ **[docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)**. Run the live health check with `npm test`. Lint, format, and typecheck with `npm run lint`, `npm run format`, and `npm run typecheck`.
+
+## Troubleshooting
+
+| Symptom                                        | Likely cause / fix                                                                                                                                    |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Invalid request schema received`              | A GraphQL query drifted from Tokopedia's registered schema. Run `npm test` and check `DEBUG=true` output; the query's field selection needs updating. |
+| A search returns no results for a valid query  | Tokopedia may be rate-limiting or has changed a filter key. Re-run `get_filters_and_sorts` to refresh valid keys, and retry.                          |
+| Empty or stale results right after a change    | In-memory cache — lower `CACHE_TTL_MS` or wait for the TTL to expire.                                                                                 |
+| `command not found: tokopedia-mcp` after clone | The repo doesn't commit `build/`. Run `npm run build`, then point the client at `build/index.js` (or use `npm link`).                                 |
+| Client can't launch the server                 | Verify the `mcpServers` command/args path; see **[docs/CONFIGURATION.md](./docs/CONFIGURATION.md)** for per-client variants.                          |
 
 ## Contributing & security
 

@@ -14,10 +14,10 @@ Commit messages follow **[Conventional Commits](https://www.conventionalcommits.
 
 ## npm dist-tags
 
-| Tag | Typical use |
-|-----|-------------|
-| `latest` | Default stable install: `npm install @bintangtimurlangit/tokopedia-mcp` |
-| `beta` | Optional prereleases: `npm publish --tag beta` with versions like `1.1.0-beta.1` |
+| Tag      | Typical use                                                                      |
+| -------- | -------------------------------------------------------------------------------- |
+| `latest` | Default stable install: `npm install @bintangtimurlangit/tokopedia-mcp`          |
+| `beta`   | Optional prereleases: `npm publish --tag beta` with versions like `1.1.0-beta.1` |
 
 Scoped packages use **`"publishConfig": { "access": "public" }`** so the package is public.
 

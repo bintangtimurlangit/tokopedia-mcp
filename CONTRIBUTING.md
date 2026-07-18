@@ -32,7 +32,7 @@ More detail: [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md).
 
    > If you change a GraphQL query, verify it against the live API. Tokopedia's
    > gateway only accepts queries whose field selection matches its registered
-   > schema, so a stale query fails with *"Invalid request schema received"*.
+   > schema, so a stale query fails with _"Invalid request schema received"_.
    > See [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md).
 
 4. **Commit messages** should follow [Conventional Commits](https://www.conventionalcommits.org/) (e.g. `feat(tools): ...`, `fix(client): ...`, `docs: ...`).
@@ -50,4 +50,4 @@ Open a [GitHub issue](https://github.com/bintangtimurlangit/tokopedia-mcp/issues
 
 ## AI-assisted contributions
 
-If a change was produced or heavily guided by an **AI coding agent or assistant**, disclose that in the PR description and **name the model** (e.g. *Claude Opus*, *GPT-5*, *Cursor Agent*). Use the same workflow as everyone else: **issues** for bugs and design questions, **pull requests** for proposed changes.
+If a change was produced or heavily guided by an **AI coding agent or assistant**, disclose that in the PR description and **name the model** (e.g. _Claude Opus_, _GPT-5_, _Cursor Agent_). Use the same workflow as everyone else: **issues** for bugs and design questions, **pull requests** for proposed changes.
