@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Ver
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-07-21
+
+### Changed
+
+- Updated development dependencies and standardized the npm trusted-publishing release workflow.
+
 ## [2.0.0] - 2026-07-08
 
 Tokopedia MCP is now a **zero-config, public discovery server**. Account features were removed in favour of a simpler, login-free tool focused on searching and exploring products, reviews, and shops.
@@ -37,6 +43,7 @@ If you used the account tools, pin the previous major: `npm install @bintangtimu
 - npm package **`@bintangtimurlangit/tokopedia-mcp`**; CLI binary name **`tokopedia-mcp`**.
 - Documentation: English and Indonesian READMEs, guides under `docs/`.
 
-[Unreleased]: https://github.com/bintangtimurlangit/tokopedia-mcp/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/bintangtimurlangit/tokopedia-mcp/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/bintangtimurlangit/tokopedia-mcp/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/bintangtimurlangit/tokopedia-mcp/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/bintangtimurlangit/tokopedia-mcp/releases/tag/v1.0.0
