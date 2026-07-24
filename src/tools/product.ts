@@ -1,17 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { TokopediaAPIError } from '../api/client.js';
 import { cache } from '../utils/cache.js';
 import { withErrorHandling, truncate } from '../utils/errors.js';
-
-const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
-
-// Tokopedia's product page is server-rendered: the core product data is no
-// longer fetched via a client GraphQL call, it is dehydrated into the HTML as
-// OpenGraph/Twitter meta tags plus an Apollo cache on `window.__cache`.
-// We fetch the page and read those, which is stable across the site's frequent
-// GraphQL schema changes.
+import { loadProductPage, findBasicInfo } from '../api/productPage.js';
 
 interface PdpBasicInfo {
   productID?: string;
@@ -37,63 +28,6 @@ interface PdpStats {
 interface PdpTxStats {
   countSold?: string;
   itemSoldFmt?: string;
-}
-
-async function fetchProductPage(url: string): Promise<string> {
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      headers: {
-        'User-Agent': USER_AGENT,
-        Accept: 'text/html,application/xhtml+xml',
-        'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-      },
-    });
-  } catch (err) {
-    throw new TokopediaAPIError(
-      `Network error loading product page: ${err instanceof Error ? err.message : String(err)}`,
-      undefined,
-      'productPage',
-    );
-  }
-  if (!res.ok) {
-    throw new TokopediaAPIError(
-      `Tokopedia returned HTTP ${res.status} for the product page`,
-      res.status,
-      'productPage',
-    );
-  }
-  return res.text();
-}
-
-function metaContent(html: string, key: string): string | undefined {
-  const re = new RegExp(
-    `<meta[^>]+(?:property|name)="${key.replace(/[:]/g, '\\:')}"[^>]+content="([^"]*)"`,
-    'i',
-  );
-  const m = html.match(re);
-  return m ? m[1] : undefined;
-}
-
-/** Extract the dehydrated Apollo cache (`window.__cache = {...};`). */
-function parseCache(html: string): Record<string, unknown> | null {
-  const m = html.match(/window\.__cache\s*=\s*(\{[\s\S]*?\});\s*<\/script>/);
-  if (!m) return null;
-  try {
-    return JSON.parse(m[1]) as Record<string, unknown>;
-  } catch {
-    return null;
-  }
-}
-
-function decode(s?: string): string | undefined {
-  if (!s) return s;
-  return s
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>');
 }
 
 export function registerProductTools(server: McpServer): void {
@@ -135,25 +69,26 @@ export function registerProductTools(server: McpServer): void {
         const cached = cache.get<string>(cacheKey);
         if (cached) return { content: [{ type: 'text', text: cached }] };
 
-        const html = await fetchProductPage(pageUrl);
+        const { cacheObj, meta } = await loadProductPage(pageUrl);
 
-        const rawTitle = decode(metaContent(html, 'og:title')) ?? '';
-        const priceFmt = decode(metaContent(html, 'twitter:data1'));
-        const priceAmount = metaContent(html, 'product:price:amount');
-        const image = metaContent(html, 'og:image');
-        const location = decode(metaContent(html, 'twitter:data2'));
-        const description = decode(metaContent(html, 'og:description'));
+        const rawTitle = meta['og:title'] ?? '';
+        const priceFmt = meta['twitter:data1'];
+        const priceAmount = meta['product:price:amount'];
+        const image = meta['og:image'];
+        const location = meta['twitter:data2'];
+        const description = meta['og:description'];
 
-        const cacheObj = parseCache(html);
         let basic: PdpBasicInfo = {};
         let stats: PdpStats = {};
         let txStats: PdpTxStats = {};
         if (cacheObj) {
-          const biKey = Object.keys(cacheObj).find((k) => /^pdpBasicInfo\d+$/.test(k));
-          if (biKey) {
-            basic = cacheObj[biKey] as PdpBasicInfo;
-            stats = (cacheObj[`$${biKey}.stats`] as PdpStats) ?? {};
-            txStats = (cacheObj[`$${biKey}.txStats`] as PdpTxStats) ?? {};
+          const bi = findBasicInfo(cacheObj);
+          if (bi) {
+            basic = bi.data as PdpBasicInfo;
+            const refStats = cacheObj[`$${bi.key}.stats`] as PdpStats | undefined;
+            if (refStats) stats = refStats;
+            const refTx = cacheObj[`$${bi.key}.txStats`] as PdpTxStats | undefined;
+            if (refTx) txStats = refTx;
           }
         }
 
