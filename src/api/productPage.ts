@@ -19,11 +19,13 @@ export interface ParsedProductPage {
 
 /**
  * Fetch the server-rendered HTML for a Tokopedia product page.
+ * Times out after 30 seconds.
  */
 async function fetchProductPage(url: string): Promise<string> {
   let res: Response;
   try {
     res = await fetch(url, {
+      signal: AbortSignal.timeout(30_000),
       headers: {
         'User-Agent': USER_AGENT,
         Accept: 'text/html,application/xhtml+xml',
@@ -31,6 +33,13 @@ async function fetchProductPage(url: string): Promise<string> {
       },
     });
   } catch (err) {
+    if (err instanceof DOMException && err.name === 'TimeoutError') {
+      throw new TokopediaAPIError(
+        'Timed out loading the product page (30s). The Tokopedia server may be slow or unreachable.',
+        undefined,
+        'productPage',
+      );
+    }
     throw new TokopediaAPIError(
       `Network error loading product page: ${err instanceof Error ? err.message : String(err)}`,
       undefined,
@@ -49,22 +58,57 @@ async function fetchProductPage(url: string): Promise<string> {
 
 /**
  * Extract an HTML <meta> tag's content attribute by property/name.
+ * Handles both attribute orders: `property="..." content="..."` and `content="..." property="..."`.
  */
 export function metaContent(html: string, key: string): string | undefined {
-  const re = new RegExp(
-    `<meta[^>]+(?:property|name)="${key.replace(/[:]/g, '\\:')}"[^>]+content="([^"]*)"`,
-    'i',
-  );
-  const m = html.match(re);
-  return m ? m[1] : undefined;
+  const escapedKey = key.replace(/[:]/g, '\\:');
+  const re1 = new RegExp(`<meta[^>]+(?:property|name)="${escapedKey}"[^>]+content="([^"]*)"`, 'i');
+  const m1 = html.match(re1);
+  if (m1) return m1[1];
+  const re2 = new RegExp(`<meta[^>]+content="([^"]*)"[^>]+(?:property|name)="${escapedKey}"`, 'i');
+  const m2 = html.match(re2);
+  return m2 ? m2[1] : undefined;
 }
 
-/** Extract the dehydrated Apollo cache (`window.__cache = {...};`). */
+/**
+ * Extract the dehydrated Apollo cache (`window.__cache = {...};`).
+ * Uses brace-counting to reliably find the full JSON object, avoiding
+ * truncation when cache values contain the literal sequence `};`.
+ */
 export function parseCache(html: string): Record<string, unknown> | null {
-  const m = html.match(/window\.__cache\s*=\s*(\{[\s\S]*?\});\s*<\/script>/);
-  if (!m) return null;
+  const startIdx = html.indexOf('window.__cache');
+  if (startIdx < 0) return null;
+
+  const openIdx = html.indexOf('{', startIdx);
+  if (openIdx < 0) return null;
+
+  // Walk characters counting braces to find the matching closing brace
+  let braceCount = 0;
+  let endIdx = -1;
+  for (let i = openIdx; i < html.length; i++) {
+    const ch = html[i];
+    if (ch === '{') braceCount++;
+    else if (ch === '}') {
+      braceCount--;
+      if (braceCount === 0) {
+        endIdx = i;
+        break;
+      }
+    } else if (ch === '"' || ch === "'") {
+      // Skip string contents to avoid brace characters inside strings
+      const quote = ch;
+      i++;
+      while (i < html.length && html[i] !== quote) {
+        if (html[i] === '\\') i++; // skip escaped char
+        i++;
+      }
+    }
+  }
+
+  if (endIdx < 0) return null;
+
   try {
-    return JSON.parse(m[1]) as Record<string, unknown>;
+    return JSON.parse(html.slice(openIdx, endIdx + 1)) as Record<string, unknown>;
   } catch {
     return null;
   }
