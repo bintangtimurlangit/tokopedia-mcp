@@ -22,14 +22,18 @@ src/
   tools/
     search.ts       # search_products (+ generic filters map)
     filters.ts      # get_filters_and_sorts
+    productPage.ts  # shared page-fetch + Apollo cache parser (used by product + variants)
+    variantExtractor.ts  # extracts variant axes and SKUs from the Apollo cache
     product.ts      # get_product_detail (parses the server-rendered page)
     reviews.ts      # get_product_reviews
     shop.ts         # get_shop_info, get_shop_products
+    variants.ts     # get_product_variants
   utils/
     cache.ts        # in-memory TTL cache
     errors.ts       # withErrorHandling wrapper, truncate helper
 test/
   smoke.ts          # the npm test health check
+  variant-extractor.test.ts  # offline unit tests for productPage + variantExtractor
 ```
 
 ## How the Tokopedia API is used (important)

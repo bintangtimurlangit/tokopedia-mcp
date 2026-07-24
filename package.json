@@ -30,7 +30,9 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "tsx test/smoke.ts",
+    "test": "npm run test:unit && tsx test/smoke.ts",
+    "test:unit": "tsx test/variant-extractor.test.ts",
+    "test:smoke": "tsx test/smoke.ts",
     "prepare": "husky",
     "prepublishOnly": "npm run build"
   },
