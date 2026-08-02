@@ -15,7 +15,12 @@ body:
         - get_filters_and_sorts
         - get_product_detail
         - get_product_variants
+        - get_product_rating_summary
+        - get_product_promo
         - get_product_reviews
+        - get_similar_products
+        - browse_category
+        - get_category_tree
         - get_shop_info
         - get_shop_products
         - Other / not sure

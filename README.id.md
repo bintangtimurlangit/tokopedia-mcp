@@ -25,15 +25,20 @@ Server [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) yang mem
 
 ## Tool
 
-| Tool                    | Deskripsi                                                                                                                                                                                                 |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `search_products`       | Pencarian kata kunci dengan pagination, urutan (`orderBy`), rentang harga, dan map **`filters`** generik (lihat [Filter](#filter)). Mengembalikan nama, harga, rating, info toko, **ID produk**, dan URL. |
-| `get_filters_and_sorts` | Temukan opsi filter dan sort yang valid untuk suatu query — pasangan `key=value` untuk dipakai di `search_products`.                                                                                      |
-| `get_product_detail`    | Data halaman produk: nama, harga, kondisi, berat, penjual, rating, jumlah ulasan/terjual, dan ID produk. Menerima URL produk atau `shopDomain` + `productKey`.                                            |
-| `get_product_variants`  | Menampilkan sumbu variasi produk (warna, ukuran, kapasitas, dll.) dan setiap kombinasi SKU dengan harga per varian, stok, status COD, dan URL langsung. Input sama dengan `get_product_detail`.           |
-| `get_product_reviews`   | Ulasan pelanggan untuk sebuah produk: rating, teks, varian yang dibeli, balasan penjual. Menerima ID produk.                                                                                              |
-| `get_shop_info`         | Profil toko: statistik, lokasi, status buka, badge Official/Power Merchant. Menerima domain atau ID toko.                                                                                                 |
-| `get_shop_products`     | Katalog toko dengan pagination, pencarian kata kunci dalam toko, dan pengurutan.                                                                                                                          |
+| Tool                         | Deskripsi                                                                                                                                                                                                                                                               |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search_products`            | Pencarian kata kunci dengan pagination, urutan (`orderBy`), rentang harga, dan map **`filters`** generik (lihat [Filter](#filter)). Mengembalikan nama, harga, rating, info toko, **ID produk**, dan URL.                                                               |
+| `get_filters_and_sorts`      | Temukan opsi filter dan sort yang valid untuk suatu query — pasangan `key=value` untuk dipakai di `search_products`.                                                                                                                                                    |
+| `get_product_detail`         | Data halaman produk: nama, harga, kondisi, berat, penjual, rating, jumlah ulasan/terjual, deskripsi penjual lengkap (termasuk tabel ukuran), baris spesifikasi, breadcrumb kategori, galeri media, dan ID produk. Menerima URL produk atau `shopDomain` + `productKey`. |
+| `get_product_variants`       | Menampilkan sumbu variasi produk (warna, ukuran, kapasitas, dll.) dan setiap kombinasi SKU dengan harga per varian, stok, status COD, dan URL langsung. Input sama dengan `get_product_detail`.                                                                         |
+| `get_product_rating_summary` | Sebaran rating (jumlah ulasan 5★ … 1★), persentase kepuasan, dan topik ulasan agregat dari Tokopedia — menilai produk tanpa membaca semua ulasan. Input sama dengan `get_product_detail`.                                                                               |
+| `get_product_promo`          | Mengecek apakah produk sedang ikut kampanye: nama kampanye, diskon, harga asli vs harga kampanye, persentase stok kampanye yang terjual, dan tanggal berakhir. Input sama dengan `get_product_detail`.                                                                  |
+| `get_product_reviews`        | Ulasan pelanggan untuk sebuah produk: rating, teks, varian yang dibeli, balasan penjual. Menerima ID produk.                                                                                                                                                            |
+| `get_similar_products`       | Rekomendasi Tokopedia untuk kategori produk tersebut — alternatif dan padanan yang lebih murah. Input sama dengan `get_product_detail`.                                                                                                                                 |
+| `browse_category`            | Menjelajah daftar produk sebuah kategori tanpa kata kunci, lengkap dengan total produk dan kategori terkait. Menerima path, identifier, atau URL kategori.                                                                                                              |
+| `get_category_tree`          | Taksonomi kategori Tokopedia beserta ID dan URL — untuk menemukan kategori bagi `browse_category` atau filter `sc` di `search_products`.                                                                                                                                |
+| `get_shop_info`              | Profil toko: statistik, lokasi, status buka, badge Official/Power Merchant. Menerima domain atau ID toko.                                                                                                                                                               |
+| `get_shop_products`          | Katalog toko dengan pagination, pencarian kata kunci dalam toko, dan pengurutan.                                                                                                                                                                                        |
 
 Semua tool bersifat publik — tidak ada yang butuh login.
 
@@ -103,10 +108,11 @@ Repositori tidak menyertakan **`build/`** di git; jalankan **`npm run build`** s
 
 Variabel lingkungan opsional:
 
-| Kunci env      | Bawaan  | Fungsi                                   |
-| -------------- | ------- | ---------------------------------------- |
-| `CACHE_TTL_MS` | `30000` | Masa cache memori dalam milidetik.       |
-| `DEBUG`        | `false` | Set `true` untuk info startup ke stderr. |
+| Kunci env           | Bawaan  | Fungsi                                          |
+| ------------------- | ------- | ----------------------------------------------- |
+| `CACHE_TTL_MS`      | `30000` | Masa cache memori dalam milidetik.              |
+| `CACHE_MAX_ENTRIES` | `200`   | Batas entri cache sebelum yang terlama dibuang. |
+| `DEBUG`             | `false` | Set `true` untuk info startup ke stderr.        |
 
 Cursor, Claude Code, Claude Desktop, dan host lain memakai bentuk `mcpServers` yang sama — lihat **[docs/CONFIGURATION.md](./docs/CONFIGURATION.md)**.
 

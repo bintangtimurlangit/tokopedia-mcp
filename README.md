@@ -25,15 +25,20 @@ A [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server that l
 
 ## Tools
 
-| Tool                    | Description                                                                                                                                                                                         |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `search_products`       | Keyword search with pagination, sort (`orderBy`), price range, and a generic **`filters`** map (see [Filtering](#filtering)). Returns names, prices, ratings, shop info, **product IDs**, and URLs. |
-| `get_filters_and_sorts` | Discover the valid filter and sort options for a query — the `key=value` pairs to feed into `search_products`.                                                                                      |
-| `get_product_detail`    | Product page data: name, price, condition, weight, seller, rating, review/sold counts, and the numeric product ID. Takes a product URL or `shopDomain` + `productKey`.                              |
-| `get_product_variants`  | Lists a product's variation axes (color, size, storage, etc.) and every SKU combination with per-variant price, stock, COD status, and direct URLs. Same input as `get_product_detail`.             |
-| `get_product_reviews`   | Customer reviews for a product: rating, text, variant purchased, seller responses. Takes a product ID.                                                                                              |
-| `get_shop_info`         | Shop profile: stats, location, open status, Official/Power Merchant badges. Takes a shop domain or ID.                                                                                              |
-| `get_shop_products`     | Paginated catalog for a shop, with in-shop keyword search and sorting.                                                                                                                              |
+| Tool                         | Description                                                                                                                                                                                                                                                               |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search_products`            | Keyword search with pagination, sort (`orderBy`), price range, and a generic **`filters`** map (see [Filtering](#filtering)). Returns names, prices, ratings, shop info, **product IDs**, and URLs.                                                                       |
+| `get_filters_and_sorts`      | Discover the valid filter and sort options for a query — the `key=value` pairs to feed into `search_products`.                                                                                                                                                            |
+| `get_product_detail`         | Product page data: name, price, condition, weight, seller, rating, review/sold counts, the full seller description (size charts included), spec rows, category breadcrumb, media gallery, and the numeric product ID. Takes a product URL or `shopDomain` + `productKey`. |
+| `get_product_variants`       | Lists a product's variation axes (color, size, storage, etc.) and every SKU combination with per-variant price, stock, COD status, and direct URLs. Same input as `get_product_detail`.                                                                                   |
+| `get_product_rating_summary` | Rating distribution (how many 5★ … 1★), satisfaction percentage, and Tokopedia's aggregated review topics — judge a product without paging through every review. Same input as `get_product_detail`.                                                                      |
+| `get_product_promo`          | Whether a product is in a running campaign: campaign name, discount, original vs campaign price, share of campaign stock sold, and the end date. Same input as `get_product_detail`.                                                                                      |
+| `get_product_reviews`        | Customer reviews for a product: rating, text, variant purchased, seller responses. Takes a product ID.                                                                                                                                                                    |
+| `get_similar_products`       | Tokopedia's recommendations for a product's category — alternatives and cheaper equivalents. Same input as `get_product_detail`.                                                                                                                                          |
+| `browse_category`            | Browse a category's product grid with no search keyword, plus its total product count and related categories. Takes a category path, identifier, or URL.                                                                                                                  |
+| `get_category_tree`          | Tokopedia's category taxonomy with IDs and browse URLs — discover categories for `browse_category` or the `sc` filter for `search_products`.                                                                                                                              |
+| `get_shop_info`              | Shop profile: stats, location, open status, Official/Power Merchant badges. Takes a shop domain or ID.                                                                                                                                                                    |
+| `get_shop_products`          | Paginated catalog for a shop, with in-shop keyword search and sorting.                                                                                                                                                                                                    |
 
 All tools are public — no login required for any of them.
 
@@ -103,10 +108,11 @@ There is **nothing to authenticate**. Add the server to your MCP client and you'
 
 Optional environment variables:
 
-| Env key        | Default | Purpose                                      |
-| -------------- | ------- | -------------------------------------------- |
-| `CACHE_TTL_MS` | `30000` | In-memory cache lifetime in milliseconds.    |
-| `DEBUG`        | `false` | Set to `true` to log startup info to stderr. |
+| Env key             | Default | Purpose                                          |
+| ------------------- | ------- | ------------------------------------------------ |
+| `CACHE_TTL_MS`      | `30000` | In-memory cache lifetime in milliseconds.        |
+| `CACHE_MAX_ENTRIES` | `200`   | Max cached entries before oldest-first eviction. |
+| `DEBUG`             | `false` | Set to `true` to log startup info to stderr.     |
 
 Cursor, Claude Code, Claude Desktop, and other hosts use the same `mcpServers` shape — see **[docs/CONFIGURATION.md](./docs/CONFIGURATION.md)** for global-install and local `node` path variants and client-specific file locations.
 

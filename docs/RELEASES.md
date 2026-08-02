@@ -25,7 +25,7 @@ Scoped packages use **`"publishConfig": { "access": "public" }`** so the package
 
 Releases are **automated** by the [`release` workflow](../.github/workflows/release.yml): pushing a `vX.Y.Z` tag runs typecheck + build and publishes to npm (with [provenance](https://docs.npmjs.com/generating-provenance-statements)), then creates a GitHub release.
 
-**One-time setup:** add an npm **automation token** as the repo secret **`NPM_TOKEN`** (Settings → Secrets and variables → Actions). Without it, the workflow still builds but skips the publish step.
+**One-time setup:** on npmjs.com, open the package → Settings → **Trusted Publisher** → add this GitHub repo with the workflow `release.yml`. Publishing uses npm **Trusted Publishing (OIDC)**, so there is no token to store or rotate. Until it is configured, the workflow still builds but the publish step fails.
 
 **To cut a release:**
 

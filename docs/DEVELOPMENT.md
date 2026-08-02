@@ -17,10 +17,14 @@
 src/
   index.ts          # MCP server entry; registers all tool groups
   api/
+    http.ts         # retry/backoff, HTML fetch, cache + in-flight coalescing
     client.ts       # gqlRequest() — the single GraphQL entry point (public, no auth)
-    productPage.ts  # shared page fetch + Apollo cache parser (product + variants)
+    apolloCache.ts  # shared helpers for walking window.__cache
+    productPage.ts  # product page fetch + Apollo cache parser
+    productExtras.ts     # rating summary, campaign, description, specs, breadcrumb, media
     variantExtractor.ts  # extracts variant axes and SKUs from the Apollo cache
-    types.ts        # shared search/filter/variant types
+    categoryPage.ts # category page loader + product/recommendation/tree extractors
+    types.ts        # shared search/filter/variant/category types
   tools/
     search.ts       # search_products (+ generic filters map)
     filters.ts      # get_filters_and_sorts
@@ -28,13 +32,16 @@ src/
     reviews.ts      # get_product_reviews
     shop.ts         # get_shop_info, get_shop_products
     variants.ts     # get_product_variants
+    insights.ts     # get_product_rating_summary, get_product_promo
+    category.ts     # browse_category, get_similar_products, get_category_tree
   utils/
     cache.ts        # in-memory TTL cache (bounded, oldest-first eviction)
     errors.ts       # withErrorHandling wrapper, truncate helper
 test/
   smoke.ts          # the npm test health check
   variant-extractor.test.ts  # offline unit tests for productPage + variantExtractor
-  cache.test.ts     # offline unit tests for the cache + fetch coalescing
+  cache.test.ts     # offline unit tests for the cache, retry, and fetch coalescing
+  extras.test.ts    # offline unit tests for productExtras + categoryPage
 ```
 
 ## How the Tokopedia API is used (important)
