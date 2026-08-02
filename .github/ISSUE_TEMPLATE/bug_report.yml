@@ -14,6 +14,7 @@ body:
         - search_products
         - get_filters_and_sorts
         - get_product_detail
+        - get_product_variants
         - get_product_reviews
         - get_shop_info
         - get_shop_products
