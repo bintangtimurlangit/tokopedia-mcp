@@ -63,6 +63,16 @@ const CHECKS: Check[] = [
     expect: ['Price:', 'Product ID'],
   },
   {
+    tool: 'get_product_variants',
+    // Same URL as the detail check above — it has a real variant axis, so an
+    // empty extraction means the Apollo cache shape drifted, not that the
+    // product is single-SKU. Also proves the two tools share one page fetch.
+    args: {
+      url: 'https://www.tokopedia.com/gawung-classic/case-iphone-ip-11-12-13-14-15-pro-promax-sling-clapink-strap-cilapi-11-7e4f2',
+    },
+    expect: ['Variation Axes'],
+  },
+  {
     tool: 'get_product_reviews',
     args: { productId: '13164846045', limit: 3 },
     // Either real reviews or a clean "no reviews yet" — both prove the query works.

@@ -31,7 +31,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm run test:unit && tsx test/smoke.ts",
-    "test:unit": "tsx test/variant-extractor.test.ts",
+    "test:unit": "tsx test/variant-extractor.test.ts && tsx test/cache.test.ts",
     "test:smoke": "tsx test/smoke.ts",
     "prepare": "husky",
     "prepublishOnly": "npm run build"
