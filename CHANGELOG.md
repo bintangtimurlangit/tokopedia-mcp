@@ -6,6 +6,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Ver
 
 ## [Unreleased]
 
+### Added
+
+- **`get_product_variants`** — lists a product's variation axes (colour, size, storage, …) and every child SKU with per-variant price, stock, COD status, and a direct URL, so agents stop quoting the default variant's price for a different variant. Thanks to [@franshjy](https://github.com/franshjy) ([#25](https://github.com/bintangtimurlangit/tokopedia-mcp/pull/25), closes [#24](https://github.com/bintangtimurlangit/tokopedia-mcp/issues/24)).
+- `CACHE_MAX_ENTRIES` (default `200`) to bound the in-memory cache.
+
+### Fixed
+
+- Variant axes no longer report a phantom `stock: 0` for every option. Tokopedia only populates option-level stock on the primary axis, and rendering it verbatim made in-stock sizes read as sold out.
+- The version reported over MCP is read from `package.json` instead of a hardcoded value that had already drifted.
+
+### Changed
+
+- The cache now sweeps expired entries and evicts oldest-first instead of growing without bound, and tolerates a malformed `CACHE_TTL_MS`.
+- `get_product_detail` and `get_product_variants` now share a single page fetch when called concurrently, not just sequentially.
+
 ## [2.0.1] - 2026-07-21
 
 ### Changed
