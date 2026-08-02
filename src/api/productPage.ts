@@ -128,32 +128,54 @@ export function decode(s?: string): string | undefined {
 }
 
 /**
+ * In-flight page loads, keyed the same way as the cache. The TTL cache only
+ * dedupes *sequential* calls — an agent that fires `get_product_detail` and
+ * `get_product_variants` at the same URL in parallel would otherwise fetch the
+ * page twice, since neither has populated the cache yet when the other starts.
+ */
+const inFlight = new Map<string, Promise<ParsedProductPage>>();
+
+/**
  * Load and parse a Tokopedia product page.
  *
- * Caches the *parsed object* (not the rendered text) keyed by URL so that
- * `get_product_detail` and `get_product_variants` can share a single HTML
- * fetch when called back-to-back by the same agent.
+ * Caches the *parsed object* (not the rendered text) keyed by URL, and
+ * coalesces concurrent loads of the same URL, so that `get_product_detail` and
+ * `get_product_variants` share a single HTML fetch whether they are called
+ * back-to-back or in parallel.
  */
 export async function loadProductPage(url: string): Promise<ParsedProductPage> {
   const cacheKey = cache.key('productPage', url);
   const cached = cache.get<ParsedProductPage>(cacheKey);
   if (cached) return cached;
 
-  const html = await fetchProductPage(url);
-  const result: ParsedProductPage = {
-    cacheObj: parseCache(html),
-    meta: {
-      'og:title': decode(metaContent(html, 'og:title')),
-      'twitter:data1': decode(metaContent(html, 'twitter:data1')),
-      'product:price:amount': metaContent(html, 'product:price:amount'),
-      'og:image': metaContent(html, 'og:image'),
-      'twitter:data2': decode(metaContent(html, 'twitter:data2')),
-      'og:description': decode(metaContent(html, 'og:description')),
-    },
-  };
+  const pending = inFlight.get(cacheKey);
+  if (pending) return pending;
 
-  cache.set(cacheKey, result);
-  return result;
+  const load = (async (): Promise<ParsedProductPage> => {
+    const html = await fetchProductPage(url);
+    const result: ParsedProductPage = {
+      cacheObj: parseCache(html),
+      meta: {
+        'og:title': decode(metaContent(html, 'og:title')),
+        'twitter:data1': decode(metaContent(html, 'twitter:data1')),
+        'product:price:amount': metaContent(html, 'product:price:amount'),
+        'og:image': metaContent(html, 'og:image'),
+        'twitter:data2': decode(metaContent(html, 'twitter:data2')),
+        'og:description': decode(metaContent(html, 'og:description')),
+      },
+    };
+    cache.set(cacheKey, result);
+    return result;
+  })();
+
+  // Cleared on failure too, so a transient network error doesn't pin a rejected
+  // promise and poison every later call for this URL.
+  inFlight.set(cacheKey, load);
+  try {
+    return await load;
+  } finally {
+    inFlight.delete(cacheKey);
+  }
 }
 
 /**
