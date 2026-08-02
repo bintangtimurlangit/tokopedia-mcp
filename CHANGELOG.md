@@ -6,20 +6,31 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Ver
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-08-03
+
 ### Added
 
 - **`get_product_variants`** — lists a product's variation axes (colour, size, storage, …) and every child SKU with per-variant price, stock, COD status, and a direct URL, so agents stop quoting the default variant's price for a different variant. Thanks to [@franshjy](https://github.com/franshjy) ([#25](https://github.com/bintangtimurlangit/tokopedia-mcp/pull/25), closes [#24](https://github.com/bintangtimurlangit/tokopedia-mcp/issues/24)).
+- **`get_product_rating_summary`** — rating distribution (5★ … 1★), satisfaction percentage, and Tokopedia's aggregated review topics.
+- **`get_product_promo`** — running campaign name, discount, original vs campaign price, share of campaign stock sold, and end date.
+- **`get_similar_products`** — Tokopedia's recommendations for a product's category.
+- **`browse_category`** — a category's product grid, total product count, and related categories.
+- **`get_category_tree`** — the category taxonomy with IDs and browse URLs.
+- `get_product_detail` now also returns the full seller description (size charts included), spec rows, the category breadcrumb, and the whole media gallery.
 - `CACHE_MAX_ENTRIES` (default `200`) to bound the in-memory cache.
 
 ### Fixed
 
 - Variant axes no longer report a phantom `stock: 0` for every option. Tokopedia only populates option-level stock on the primary axis, and rendering it verbatim made in-stock sizes read as sold out.
 - The version reported over MCP is read from `package.json` instead of a hardcoded value that had already drifted.
+- `get_product_detail` no longer truncates the description at 400 characters, which was dropping the size charts and material specs that only appear later in the text.
+- Product names no longer keep a trailing `di <shop> | Tokopedia`; the site suffix is stripped before the shop suffix is matched.
 
 ### Changed
 
 - The cache now sweeps expired entries and evicts oldest-first instead of growing without bound, and tolerates a malformed `CACHE_TTL_MS`.
-- `get_product_detail` and `get_product_variants` now share a single page fetch when called concurrently, not just sequentially.
+- All product tools now share a single page fetch when called concurrently, not just sequentially.
+- Requests retry transient failures (network errors, `429`, `5xx`) with backoff, honouring `Retry-After`. Other `4xx` responses still fail immediately.
 
 ## [2.0.1] - 2026-07-21
 
