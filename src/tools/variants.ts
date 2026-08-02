@@ -106,9 +106,20 @@ export function registerVariantTools(server: McpServer): void {
                 : '📏';
             lines.push(`  ${typeTag} **${axis.name}** (${axis.options.length} options):`);
 
+            // Tokopedia only populates option-level stock on the primary axis —
+            // secondary axes report 0 for every option even when the SKUs are in
+            // stock. Rendering that verbatim reads as "size S is sold out", so
+            // only show option stock on an axis that actually carries it. A real
+            // 0 alongside non-zero siblings still shows. Per-SKU stock below is
+            // authoritative either way.
+            const axisCarriesStock = axis.options.some(
+              (o) => o.stock !== null && Number(o.stock) > 0,
+            );
+
             for (const opt of axis.options) {
               const hexBadge = opt.hexColor ? ` \`${opt.hexColor}\`` : '';
-              const stockBadge = opt.stock !== null ? ` [stock: ${opt.stock}]` : '';
+              const stockBadge =
+                axisCarriesStock && opt.stock !== null ? ` [stock: ${opt.stock}]` : '';
               lines.push(`    - ${opt.value}${hexBadge}${stockBadge}`);
             }
           }
