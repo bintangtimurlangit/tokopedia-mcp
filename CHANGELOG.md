@@ -69,7 +69,8 @@ If you used the account tools, pin the previous major: `npm install @bintangtimu
 - npm package **`@bintangtimurlangit/tokopedia-mcp`**; CLI binary name **`tokopedia-mcp`**.
 - Documentation: English and Indonesian READMEs, guides under `docs/`.
 
-[Unreleased]: https://github.com/bintangtimurlangit/tokopedia-mcp/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/bintangtimurlangit/tokopedia-mcp/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/bintangtimurlangit/tokopedia-mcp/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/bintangtimurlangit/tokopedia-mcp/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/bintangtimurlangit/tokopedia-mcp/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/bintangtimurlangit/tokopedia-mcp/releases/tag/v1.0.0
