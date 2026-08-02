@@ -3,6 +3,12 @@ import { z } from 'zod';
 import { cache } from '../utils/cache.js';
 import { withErrorHandling, truncate } from '../utils/errors.js';
 import { loadProductPage, findBasicInfo } from '../api/productPage.js';
+import {
+  extractBreadcrumb,
+  extractDescription,
+  extractMedia,
+  extractSpecs,
+} from '../api/productExtras.js';
 
 interface PdpBasicInfo {
   productID?: string;
@@ -103,8 +109,10 @@ export function registerProductTools(server: McpServer): void {
           };
         }
 
-        // og:title is "<product name> di <shop>" — strip the shop suffix.
-        let name = rawTitle;
+        // og:title is "<product name> di <shop> | Tokopedia". The site suffix has
+        // to come off first, otherwise the shop-suffix check never matches and
+        // the name keeps a trailing "di <shop> | Tokopedia".
+        let name = rawTitle.replace(/\s*\|\s*Tokopedia\s*$/i, '');
         if (basic.shopName && name.endsWith(` di ${basic.shopName}`)) {
           name = name.slice(0, -` di ${basic.shopName}`.length);
         }
@@ -145,13 +153,46 @@ export function registerProductTools(server: McpServer): void {
             : '',
         ].filter((l) => l !== '');
 
-        if (description) {
-          lines.push('', '📝 **Description:**', truncate(description, 400));
+        // Everything below comes from the same page response — no extra fetch.
+        const breadcrumb = extractBreadcrumb(cacheObj ?? {});
+        if (breadcrumb.length > 0) {
+          lines.push('', `🗂 **Category:** ${breadcrumb.map((c) => c.name).join(' → ')}`);
+          lines.push(`   🔗 ${breadcrumb[breadcrumb.length - 1].url}`);
         }
-        if (image) {
+
+        const specs = extractSpecs(cacheObj ?? {});
+        // "Kondisi"/"Pemesanan Minimum" already appear under Details above.
+        const extraSpecs = specs.filter(
+          (s) => !/^(kondisi|pemesanan minimum|kategori)$/i.test(s.title),
+        );
+        if (extraSpecs.length > 0) {
+          lines.push('', '📑 **Specs:**');
+          for (const s of extraSpecs) lines.push(`  • ${s.title}: ${s.value}`);
+        }
+
+        // The seller's real description — og:description is a truncated summary,
+        // so size charts and material specs only exist in the page cache.
+        const fullDescription = extractDescription(cacheObj ?? {}) ?? description;
+        if (fullDescription) {
+          lines.push('', '📝 **Description:**', truncate(fullDescription, 2000));
+        }
+
+        const media = extractMedia(cacheObj ?? {});
+        if (media.length > 0) {
+          const images = media.filter((m) => m.type !== 'video' && m.url);
+          const videos = media.filter((m) => m.type === 'video' || m.videoUrl);
+          lines.push('', `🖼 **Media** (${media.length}):`);
+          for (const m of images.slice(0, 10)) lines.push(`  • ${m.url}`);
+          for (const v of videos.slice(0, 3)) lines.push(`  🎬 ${v.videoUrl || v.url}`);
+          if (images.length > 10) lines.push(`  … and ${images.length - 10} more images`);
+        } else if (image) {
           lines.push('', `🖼 ${image}`);
         }
+
         lines.push('', `🔗 ${basic.url ?? pageUrl}`);
+        lines.push(
+          '💡 Related tools: get_product_variants, get_product_rating_summary, get_product_promo.',
+        );
 
         const text = lines.join('\n');
         cache.set(cacheKey, text);
