@@ -73,6 +73,39 @@ const CHECKS: Check[] = [
     expect: ['Variation Axes'],
   },
   {
+    tool: 'get_product_rating_summary',
+    args: {
+      url: 'https://www.tokopedia.com/gawung-classic/case-iphone-ip-11-12-13-14-15-pro-promax-sling-clapink-strap-cilapi-11-7e4f2',
+    },
+    expect: ['Rating Summary', 'no rating data'],
+  },
+  {
+    tool: 'get_product_promo',
+    args: {
+      url: 'https://www.tokopedia.com/gawung-classic/case-iphone-ip-11-12-13-14-15-pro-promax-sling-clapink-strap-cilapi-11-7e4f2',
+    },
+    // Campaigns come and go, so either outcome proves the extraction path works.
+    expect: ['Campaign stock', 'No campaign running'],
+  },
+  {
+    tool: 'browse_category',
+    args: { category: 'fashion-pria/atasan-pria/kaos-pria', limit: 3 },
+    expect: ['Category ID'],
+  },
+  {
+    tool: 'get_similar_products',
+    args: {
+      url: 'https://www.tokopedia.com/gawung-classic/case-iphone-ip-11-12-13-14-15-pro-promax-sling-clapink-strap-cilapi-11-7e4f2',
+      limit: 3,
+    },
+    expect: ['Similar products', 'No similar products'],
+  },
+  {
+    tool: 'get_category_tree',
+    args: { category: 'Elektronik' },
+    expect: ['Tokopedia Categories'],
+  },
+  {
     tool: 'get_product_reviews',
     args: { productId: '13164846045', limit: 3 },
     // Either real reviews or a clean "no reviews yet" — both prove the query works.

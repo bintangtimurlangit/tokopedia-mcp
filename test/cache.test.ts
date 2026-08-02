@@ -136,7 +136,7 @@ async function testCoalescing() {
     ok(a === b && b === c, 'all callers receive the same parsed page');
   });
 
-  await testAsync('a failed load is not pinned for later calls', async () => {
+  await testAsync('a transient network error is retried, not surfaced', async () => {
     let calls = 0;
     globalThis.fetch = (async () => {
       calls++;
@@ -145,18 +145,62 @@ async function testCoalescing() {
     }) as typeof fetch;
 
     cache.clear();
-    const url = 'https://www.tokopedia.com/shop/retry-test';
+    const page = await loadProductPage('https://www.tokopedia.com/shop/retry-test');
+    strictEqual(page.meta['og:title'], 'Test Product');
+    strictEqual(calls, 2, 'retried once and succeeded');
+  });
+
+  await testAsync('a 5xx is retried and a 4xx is not', async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      if (calls === 1) {
+        return { ok: false, status: 503, headers: new Headers(), text: async () => '' } as Response;
+      }
+      return { ok: true, status: 200, text: async () => html } as Response;
+    }) as typeof fetch;
+
+    cache.clear();
+    await loadProductPage('https://www.tokopedia.com/shop/five-oh-three');
+    strictEqual(calls, 2, '503 retried');
+
+    calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      return { ok: false, status: 404, headers: new Headers(), text: async () => '' } as Response;
+    }) as typeof fetch;
+
+    cache.clear();
+    let threw = false;
+    try {
+      await loadProductPage('https://www.tokopedia.com/shop/four-oh-four');
+    } catch {
+      threw = true;
+    }
+    ok(threw, '404 surfaces');
+    strictEqual(calls, 1, '404 not retried — it will never succeed');
+  });
+
+  await testAsync('a persistently failing load is not pinned for later calls', async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      if (calls <= 3) throw new Error('boom'); // exhaust every retry attempt
+      return { ok: true, status: 200, text: async () => html } as Response;
+    }) as typeof fetch;
+
+    cache.clear();
+    const url = 'https://www.tokopedia.com/shop/pin-test';
     let threw = false;
     try {
       await loadProductPage(url);
     } catch {
       threw = true;
     }
-    ok(threw, 'first call surfaces the network error');
+    ok(threw, 'exhausted retries surface the error');
 
-    const second = await loadProductPage(url); // must retry, not replay the rejection
+    const second = await loadProductPage(url); // must re-attempt, not replay the rejection
     strictEqual(second.meta['og:title'], 'Test Product');
-    strictEqual(calls, 2);
   });
 
   globalThis.fetch = realFetch;
