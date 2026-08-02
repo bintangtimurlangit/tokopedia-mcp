@@ -1,8 +1,4 @@
-import { TokopediaAPIError } from './client.js';
-import { cache } from '../utils/cache.js';
-
-const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+import { loadCachedPage } from './http.js';
 
 // Tokopedia's product page is server-rendered: the core product data is no
 // longer fetched via a client GraphQL call, it is dehydrated into the HTML as
@@ -15,45 +11,6 @@ export interface ParsedProductPage {
   cacheObj: Record<string, unknown> | null;
   /** Extracted <meta> tag values keyed by property/name. */
   meta: Record<string, string | undefined>;
-}
-
-/**
- * Fetch the server-rendered HTML for a Tokopedia product page.
- * Times out after 30 seconds.
- */
-async function fetchProductPage(url: string): Promise<string> {
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      signal: AbortSignal.timeout(30_000),
-      headers: {
-        'User-Agent': USER_AGENT,
-        Accept: 'text/html,application/xhtml+xml',
-        'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-      },
-    });
-  } catch (err) {
-    if (err instanceof DOMException && err.name === 'TimeoutError') {
-      throw new TokopediaAPIError(
-        'Timed out loading the product page (30s). The Tokopedia server may be slow or unreachable.',
-        undefined,
-        'productPage',
-      );
-    }
-    throw new TokopediaAPIError(
-      `Network error loading product page: ${err instanceof Error ? err.message : String(err)}`,
-      undefined,
-      'productPage',
-    );
-  }
-  if (!res.ok) {
-    throw new TokopediaAPIError(
-      `Tokopedia returned HTTP ${res.status} for the product page`,
-      res.status,
-      'productPage',
-    );
-  }
-  return res.text();
 }
 
 /**
@@ -128,54 +85,24 @@ export function decode(s?: string): string | undefined {
 }
 
 /**
- * In-flight page loads, keyed the same way as the cache. The TTL cache only
- * dedupes *sequential* calls — an agent that fires `get_product_detail` and
- * `get_product_variants` at the same URL in parallel would otherwise fetch the
- * page twice, since neither has populated the cache yet when the other starts.
- */
-const inFlight = new Map<string, Promise<ParsedProductPage>>();
-
-/**
  * Load and parse a Tokopedia product page.
  *
  * Caches the *parsed object* (not the rendered text) keyed by URL, and
- * coalesces concurrent loads of the same URL, so that `get_product_detail` and
- * `get_product_variants` share a single HTML fetch whether they are called
- * back-to-back or in parallel.
+ * coalesces concurrent loads of the same URL, so that every product tool shares
+ * a single HTML fetch whether called back-to-back or in parallel.
  */
-export async function loadProductPage(url: string): Promise<ParsedProductPage> {
-  const cacheKey = cache.key('productPage', url);
-  const cached = cache.get<ParsedProductPage>(cacheKey);
-  if (cached) return cached;
-
-  const pending = inFlight.get(cacheKey);
-  if (pending) return pending;
-
-  const load = (async (): Promise<ParsedProductPage> => {
-    const html = await fetchProductPage(url);
-    const result: ParsedProductPage = {
-      cacheObj: parseCache(html),
-      meta: {
-        'og:title': decode(metaContent(html, 'og:title')),
-        'twitter:data1': decode(metaContent(html, 'twitter:data1')),
-        'product:price:amount': metaContent(html, 'product:price:amount'),
-        'og:image': metaContent(html, 'og:image'),
-        'twitter:data2': decode(metaContent(html, 'twitter:data2')),
-        'og:description': decode(metaContent(html, 'og:description')),
-      },
-    };
-    cache.set(cacheKey, result);
-    return result;
-  })();
-
-  // Cleared on failure too, so a transient network error doesn't pin a rejected
-  // promise and poison every later call for this URL.
-  inFlight.set(cacheKey, load);
-  try {
-    return await load;
-  } finally {
-    inFlight.delete(cacheKey);
-  }
+export function loadProductPage(url: string): Promise<ParsedProductPage> {
+  return loadCachedPage('productPage', url, (html) => ({
+    cacheObj: parseCache(html),
+    meta: {
+      'og:title': decode(metaContent(html, 'og:title')),
+      'twitter:data1': decode(metaContent(html, 'twitter:data1')),
+      'product:price:amount': metaContent(html, 'product:price:amount'),
+      'og:image': metaContent(html, 'og:image'),
+      'twitter:data2': decode(metaContent(html, 'twitter:data2')),
+      'og:description': decode(metaContent(html, 'og:description')),
+    },
+  }));
 }
 
 /**

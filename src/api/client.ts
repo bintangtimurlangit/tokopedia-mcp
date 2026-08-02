@@ -1,9 +1,10 @@
 import 'dotenv/config';
+import { TokopediaAPIError, USER_AGENT, fetchWithRetry } from './http.js';
+
+// Re-exported so existing imports of the error type keep working.
+export { TokopediaAPIError };
 
 const TOKOPEDIA_GQL = 'https://gql.tokopedia.com/graphql';
-
-const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
 const BASE_HEADERS: Record<string, string> = {
   'User-Agent': USER_AGENT,
@@ -15,17 +16,6 @@ const BASE_HEADERS: Record<string, string> = {
   'X-Source': 'tokopedia-lite',
   'X-Version': '1.0',
 };
-
-export class TokopediaAPIError extends Error {
-  constructor(
-    message: string,
-    public readonly statusCode?: number,
-    public readonly endpoint?: string,
-  ) {
-    super(message);
-    this.name = 'TokopediaAPIError';
-  }
-}
 
 /**
  * Issues a GraphQL request against Tokopedia's public gateway.
@@ -41,24 +31,12 @@ export async function gqlRequest<T>(
   const url = `${TOKOPEDIA_GQL}/${operationName}`;
   const body = JSON.stringify({ operationName, query, variables: variables ?? {} });
 
-  let response: Response;
-  try {
-    response = await fetch(url, { method: 'POST', headers: BASE_HEADERS, body });
-  } catch (err) {
-    throw new TokopediaAPIError(
-      `Network error calling ${operationName}: ${err instanceof Error ? err.message : String(err)}`,
-      undefined,
-      operationName,
-    );
-  }
-
-  if (!response.ok) {
-    throw new TokopediaAPIError(
-      `Tokopedia API returned HTTP ${response.status} for ${operationName}`,
-      response.status,
-      operationName,
-    );
-  }
+  // Retries transient failures (network error, 429, 5xx) with backoff.
+  const response = await fetchWithRetry(
+    url,
+    { method: 'POST', headers: BASE_HEADERS, body },
+    operationName,
+  );
 
   const json = (await response.json()) as { errors?: Array<{ message: string }> } & T;
 
