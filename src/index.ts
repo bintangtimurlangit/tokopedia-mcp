@@ -11,6 +11,8 @@ import { registerProductTools } from './tools/product.js';
 import { registerReviewTools } from './tools/reviews.js';
 import { registerShopTools } from './tools/shop.js';
 import { registerVariantTools } from './tools/variants.js';
+import { registerInsightTools } from './tools/insights.js';
+import { registerCategoryTools } from './tools/category.js';
 
 // The version reported over MCP must track package.json — hardcoding it here
 // means every release silently ships a stale number to clients. Resolves to the
@@ -38,6 +40,8 @@ async function main() {
   registerReviewTools(server);
   registerShopTools(server);
   registerVariantTools(server);
+  registerInsightTools(server);
+  registerCategoryTools(server);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

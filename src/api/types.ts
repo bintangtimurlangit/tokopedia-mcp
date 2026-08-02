@@ -199,3 +199,169 @@ export interface ProductVariantSummary {
   /** Data source indicator. */
   source: 'apollo_cache';
 }
+
+// ─── Product Page Extras ──────────────────────────────────────────────────────
+
+/** One row of the 5★→1★ rating distribution. */
+export interface RatingBreakdown {
+  /** Star level, 1-5. */
+  rate: number;
+  /** Number of reviews at this star level. */
+  totalReviews: number;
+  /** Share of all reviews at this level, 0-100. */
+  percentage: number;
+}
+
+/** An aggregated review topic Tokopedia computes (e.g. "Kualitas Barang"). */
+export interface ReviewTopic {
+  /** Display label. */
+  label: string;
+  /** Internal topic key. */
+  key: string;
+  /** Average rating for this topic. */
+  rating: number;
+  /** How many reviews mention it. */
+  reviewCount: number;
+}
+
+/** Aggregate rating view for a product, without fetching individual reviews. */
+export interface ProductRatingSummary {
+  /** Overall score as displayed, e.g. "4.8". */
+  ratingScore: string;
+  /** Total number of ratings. */
+  totalRating: number;
+  /** How many of those include a photo. */
+  totalRatingWithImage: number;
+  /** Tokopedia's satisfaction line, e.g. "100% pembeli merasa puas". */
+  satisfactionText: string;
+  /** Distribution from 5★ down to 1★. */
+  breakdown: RatingBreakdown[];
+  /** Aggregated topics, most-reviewed first as returned. */
+  topics: ReviewTopic[];
+}
+
+/** A running campaign/flash sale on a product. */
+export interface ProductCampaign {
+  /** Campaign ID; "0" or empty means no active campaign. */
+  campaignId: string;
+  /** Campaign type name, e.g. "Guncang 8.8". */
+  campaignName: string;
+  /** Broader promo umbrella, e.g. "Promosi Tokopedia". */
+  thematicName: string;
+  /** Discount percentage off the original price. */
+  discountPercentage: number;
+  /** Pre-discount price in IDR. */
+  originalPrice: number;
+  /** Campaign price in IDR. */
+  discountedPrice: number;
+  /** Units still available at the campaign price. */
+  stock: number;
+  /** Units allocated to the campaign. */
+  originalStock: number;
+  /** Percentage of the campaign allocation already sold. */
+  stockSoldPercentage: number;
+  /** Campaign start, as Tokopedia formats it. */
+  startDate: string;
+  /** Campaign end, as Tokopedia formats it. */
+  endDate: string;
+  /** Whether the campaign is live right now. */
+  isActive: boolean;
+  /** Cashback percentage, 0 when none. */
+  cashbackPercentage: number;
+}
+
+/** One labelled spec row shown under a product (Kondisi, Min order, …). */
+export interface ProductSpecRow {
+  /** Row label. */
+  title: string;
+  /** Row value. */
+  value: string;
+  /** Optional link target for the value. */
+  url: string;
+}
+
+/** One step of a product's category breadcrumb. */
+export interface ProductCategoryCrumb {
+  /** Numeric category ID. */
+  id: string;
+  /** Category name. */
+  name: string;
+  /** Browse URL for the category. */
+  url: string;
+}
+
+/** One item from a product's media gallery. */
+export interface ProductMediaItem {
+  /** "image" or "video". */
+  type: string;
+  /** Full-size URL. */
+  url: string;
+  /** Thumbnail URL. */
+  thumbnail: string;
+  /** Source URL when the item is a video. */
+  videoUrl: string;
+}
+
+// ─── Category Browsing ────────────────────────────────────────────────────────
+
+/** A product as listed on a category page or in its recommendations. */
+export interface CategoryProduct {
+  /** Numeric product ID. */
+  id: string;
+  /** Product name. */
+  name: string;
+  /** Direct product URL, tracking params stripped. */
+  url: string;
+  /** Thumbnail/preview image URL. */
+  imageUrl: string;
+  /** Formatted price, e.g. "Rp135.000". */
+  price: string;
+  /** Raw price in IDR. */
+  priceInt: number;
+  /** Formatted pre-discount price, empty when not discounted. */
+  originalPrice: string;
+  /** Discount percentage, 0 when none. */
+  discountPercentage: number;
+  /** Average rating, 0 when unrated. */
+  rating: number;
+  /** Number of reviews. */
+  reviewCount: number;
+  /** Whether the item ships as a preorder. */
+  isPreorder: boolean;
+  /** Selling shop's name. */
+  shopName: string;
+  /** Selling shop's city. */
+  shopLocation: string;
+  /** Whether the shop is an Official Store. */
+  shopIsOfficial: boolean;
+  /** Whether the shop carries the Power Merchant badge. */
+  shopIsPowerBadge: boolean;
+}
+
+/** A node in Tokopedia's category taxonomy. */
+export interface CategoryNode {
+  /** Numeric category ID. */
+  id: string;
+  /** Category name. */
+  name: string;
+  /** Browse URL, empty when Tokopedia ships no identifier. */
+  url: string;
+  /** Direct children, empty at the deepest level requested. */
+  children: CategoryNode[];
+}
+
+/** Headline information about a single category. */
+export interface CategorySummary {
+  /** Numeric category ID. */
+  id: string;
+  /** Category name. */
+  name: string;
+  /** Absolute browse URL. */
+  url: string;
+  /** Marketing description Tokopedia shows on the page. */
+  description: string;
+  /** Parent category ID. */
+  parentId: string;
+  /** Root (top-level) category ID. */
+  rootId: string;
+}
