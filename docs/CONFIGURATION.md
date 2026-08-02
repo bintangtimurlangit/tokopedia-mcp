@@ -10,10 +10,11 @@ For installing the package or cloning the repo, see **[Installation](../README.m
 
 All optional. Set them in your MCP client's **`env`** block, or copy `.env.example` to `.env` when developing from a checkout.
 
-| Variable       | Default | Description                                   |
-| -------------- | ------- | --------------------------------------------- |
-| `CACHE_TTL_MS` | `30000` | In-memory cache time-to-live in milliseconds. |
-| `DEBUG`        | `false` | Set to `true` for a startup notice on stderr. |
+| Variable            | Default | Description                                                          |
+| ------------------- | ------- | -------------------------------------------------------------------- |
+| `CACHE_TTL_MS`      | `30000` | In-memory cache time-to-live in milliseconds.                        |
+| `CACHE_MAX_ENTRIES` | `200`   | Max cached entries before the oldest are evicted. Bounds memory use. |
+| `DEBUG`             | `false` | Set to `true` for a startup notice on stderr.                        |
 
 ---
 
